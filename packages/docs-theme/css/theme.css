@@ -1,0 +1,156 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap');
+
+:root {
+  --sb-color-ink: #1f1a12;
+  --sb-color-ink-muted: #4e4639;
+  --sb-color-paper: #fffaf3;
+  --sb-color-cream: #f6ecde;
+  --sb-color-caramel: #d38c3a;
+  --sb-color-caramel-dark: #a9682a;
+  --sb-color-leaf: #2f6b4a;
+  --sb-shadow-soft: 0 12px 30px rgba(59, 40, 16, 0.08);
+  --sb-radius-lg: 18px;
+  --sb-radius-md: 12px;
+
+  --ifm-color-primary: var(--sb-color-caramel);
+  --ifm-color-primary-dark: #c07d2f;
+  --ifm-color-primary-darker: #a96e29;
+  --ifm-color-primary-darkest: #82531f;
+  --ifm-color-primary-light: #e3a24f;
+  --ifm-color-primary-lighter: #eab061;
+  --ifm-color-primary-lightest: #f1c482;
+
+  --ifm-background-color: #fffaf3;
+  --ifm-background-surface-color: #fffdf8;
+  --ifm-navbar-background-color: rgba(255, 249, 242, 0.8);
+  --ifm-navbar-shadow: none;
+  --ifm-font-family-base: "Manrope", sans-serif;
+  --ifm-heading-font-family: "Fraunces", serif;
+  --ifm-code-font-size: 0.95em;
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #e3a24f;
+  --ifm-color-primary-dark: #cf8f3f;
+  --ifm-color-primary-darker: #b97f35;
+  --ifm-color-primary-darkest: #8f6129;
+  --ifm-color-primary-light: #eab86b;
+  --ifm-color-primary-lighter: #f0c684;
+  --ifm-color-primary-lightest: #f6d79e;
+  --ifm-background-color: #14110d;
+  --ifm-background-surface-color: #1b160f;
+  --ifm-navbar-background-color: rgba(20, 17, 13, 0.85);
+}
+
+html {
+  background-color: var(--ifm-background-color);
+}
+
+body {
+  color: var(--sb-color-ink);
+  background-color: var(--ifm-background-color);
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(211, 140, 58, 0.16), transparent 40%),
+    radial-gradient(circle at 82% 12%, rgba(47, 107, 74, 0.14), transparent 45%),
+    linear-gradient(180deg, #fff8ee 0%, #fffdf8 45%, #f6ecde 100%);
+  background-attachment: fixed;
+}
+
+[data-theme='dark'] body {
+  color: #f6efe6;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(211, 140, 58, 0.18), transparent 40%),
+    radial-gradient(circle at 82% 12%, rgba(82, 155, 108, 0.2), transparent 45%),
+    linear-gradient(180deg, #17130e 0%, #14110d 45%, #1b160f 100%);
+}
+
+.sb-layout {
+  min-height: 100vh;
+}
+
+.navbar {
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(63, 45, 22, 0.12);
+  box-shadow: var(--sb-shadow-soft);
+}
+
+[data-theme='dark'] .navbar {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.footer {
+  background: linear-gradient(135deg, rgba(211, 140, 58, 0.15), rgba(47, 107, 74, 0.12));
+}
+
+.theme-doc-sidebar-container {
+  background: rgba(255, 255, 255, 0.6);
+  border-right: 1px solid rgba(63, 45, 22, 0.12);
+  backdrop-filter: blur(18px);
+}
+
+[data-theme='dark'] .theme-doc-sidebar-container {
+  background: rgba(20, 17, 13, 0.7);
+  border-right-color: rgba(255, 255, 255, 0.08);
+}
+
+.main-wrapper main {
+  animation: sb-page-in 620ms ease-out both;
+}
+
+@keyframes sb-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sb-mdx > * {
+  animation: sb-stagger 520ms ease-out both;
+}
+
+.sb-mdx > *:nth-child(1) { animation-delay: 0ms; }
+.sb-mdx > *:nth-child(2) { animation-delay: 60ms; }
+.sb-mdx > *:nth-child(3) { animation-delay: 120ms; }
+.sb-mdx > *:nth-child(4) { animation-delay: 180ms; }
+.sb-mdx > *:nth-child(5) { animation-delay: 240ms; }
+.sb-mdx > *:nth-child(6) { animation-delay: 300ms; }
+.sb-mdx > *:nth-child(7) { animation-delay: 360ms; }
+.sb-mdx > *:nth-child(8) { animation-delay: 420ms; }
+
+@keyframes sb-stagger {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.theme-code-block,
+pre code {
+  border-radius: var(--sb-radius-md);
+}
+
+.theme-code-block {
+  box-shadow: var(--sb-shadow-soft);
+}
+
+.markdown blockquote {
+  border-left: 4px solid var(--ifm-color-primary);
+  background: rgba(211, 140, 58, 0.08);
+  border-radius: var(--sb-radius-md);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .main-wrapper main,
+  .sb-mdx > * {
+    animation: none;
+  }
+}
