@@ -1,0 +1,4 @@
+build/
+.docusaurus/
+.generated/
+node_modules/

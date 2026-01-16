@@ -8,6 +8,9 @@
     "theme",
     "index.js"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
     "@docusaurus/core": "^3.0.0",
     "@docusaurus/theme-classic": "^3.0.0",

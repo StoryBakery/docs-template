@@ -1,0 +1,11 @@
+{
+  "name": "storybakery-docs-template",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "npm --prefix tests/luau-module-project/website test",
+    "test:website": "npm --prefix tests/luau-module-project/website test"
+  }
+}

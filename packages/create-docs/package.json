@@ -1,0 +1,19 @@
+{
+  "name": "@storybakery/create-docs",
+  "version": "0.1.0",
+  "description": "StoryBakery docs bootstrap CLI",
+  "bin": {
+    "create-storybakery-docs": "bin/create-docs.js"
+  },
+  "files": [
+    "bin",
+    "template"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

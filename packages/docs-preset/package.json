@@ -1,0 +1,24 @@
+{
+  "name": "@storybakery/docs-preset",
+  "version": "0.1.0",
+  "description": "StoryBakery Docusaurus preset",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "plugins"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@storybakery/docs-theme": "^0.1.0"
+  },
+  "peerDependencies": {
+    "@docusaurus/core": "^3.0.0",
+    "@docusaurus/plugin-content-docs": "^3.0.0",
+    "@docusaurus/plugin-content-pages": "^3.0.0",
+    "@docusaurus/theme-classic": "^3.0.0",
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  }
+}

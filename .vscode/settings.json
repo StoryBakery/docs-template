@@ -1,0 +1,18 @@
+{
+    "files.exclude": {
+        "**/.git": false,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/CVS": true,
+        "**/.ruby-lsp": true,
+        "**/pesde/**": true,
+        "**/luau_packages/**": true,
+        "**/lune_packages/**": true,
+        "**/roblox_packages/**": true,
+        "**/darklua_build/**": true,
+        "**/node_modules": true
+    },
+    "explorerExclude.backup": {}
+}

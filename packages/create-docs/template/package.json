@@ -1,0 +1,27 @@
+{
+  "name": "storybakery-docs-site",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "moonwave:extract": "node scripts/moonwave-extract.js",
+    "moonwave:watch": "node scripts/moonwave-watch.js",
+    "dev": "concurrently -k -n moonwave,docs \"npm run moonwave:watch\" \"docusaurus start\"",
+    "start": "npm run moonwave:extract && docusaurus start",
+    "build": "npm run moonwave:extract && docusaurus build",
+    "serve": "docusaurus serve"
+  },
+  "dependencies": {
+    "@docusaurus/core": "^3.0.0",
+    "@docusaurus/plugin-content-docs": "^3.0.0",
+    "@docusaurus/plugin-content-pages": "^3.0.0",
+    "@docusaurus/theme-classic": "^3.0.0",
+    "@storybakery/docs-preset": "^0.1.0",
+    "adm-zip": "^0.5.12",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "chokidar": "^3.6.0",
+    "concurrently": "^8.2.2"
+  }
+}
