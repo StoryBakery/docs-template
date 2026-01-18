@@ -12,25 +12,23 @@ sidebar_label: 사용법
 1. 프로젝트 레포에 `website/` 디렉터리를 만든다.
 2. `@storybakery/docs-preset`을 설치한다.
 3. `docusaurus.config.ts`에 preset 옵션을 지정한다.
-4. (Moonwave 사용 시) JSON 산출물 생성 후 빌드한다.
+4. reference 문서를 사용한다면 `docs/reference/`에 생성 결과를 준비한다.
 
 ## 기본 구조
 ```
 website/
   docs/              # 사람이 작성하는 문서
     reference/       # 생성된 MD/MDX 문서
-  .generated/
-    moonwave/        # Moonwave JSON 산출물
+  .generated/        # 생성 산출물
   src/
     pages/           # 커스텀 페이지
   static/
     assets/          # 정적 자산
 ```
 
-## Moonwave 표준 흐름
-- JSON 산출물: `website/.generated/moonwave/docs.json`
-- 변환 결과: `website/docs/reference/`
-- 빌드 순서: `Moonwave 출력 -> JSON to MDX -> Docusaurus 빌드`
+## Reference 표준 흐름
+- reference 문서: `website/docs/reference/`
+- 빌드 순서: `reference 문서 준비 -> Docusaurus 빌드`
 
 ## 커스텀 레벨 요약
 - Level 0: preset 옵션 수정

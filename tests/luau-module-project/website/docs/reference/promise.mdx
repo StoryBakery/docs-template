@@ -1,0 +1,1253 @@
+---
+title: Promise
+sidebar_label: Promise
+id: promise
+---
+
+
+<div class="sb-ref-header">
+<div class="sb-ref-kicker">Engine Class</div>
+<div class="sb-ref-title"><span class="sb-ref-title-icon" aria-hidden="true"></span><h1>Promise</h1></div>
+
+<div class="sb-ref-hero-meta"><div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--class">Class</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L220" target="_blank" rel="noreferrer">View Source</a></div></div>
+</div>
+
+A Promise is an object that represents a value that will exist in the future, but doesn't right now.
+Promises allow you to then attach callbacks that can run once the value becomes available (known as *resolving*),
+or if an error has occurred (known as *rejecting*).
+
+<a id="summary"></a>
+## Summary
+
+<div class="sb-ref-summary-groups"><div class="sb-ref-summary-group"><div class="sb-ref-summary-group-title">Properties</div><table class="sb-ref-summary-table"><tbody><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--property" aria-hidden="true"></span><a href="#properties-status">Status</a><span class="sb-ref-summary-type">Status</span></div></td></tr></tbody></table></div><div class="sb-ref-summary-group"><div class="sb-ref-summary-group-title">Methods</div><table class="sb-ref-summary-table"><tbody><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--method" aria-hidden="true"></span><a href="#methods-timeout">timeout</a><span class="sb-ref-summary-type">Promise</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--method" aria-hidden="true"></span><a href="#methods-getstatus">getStatus</a><span class="sb-ref-summary-type">Status</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--method" aria-hidden="true"></span><a href="#methods-andthen">andThen</a><span class="sb-ref-summary-type">Promise&lt;...any&gt;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--method" aria-hidden="true"></span><a href="#methods-catch">catch</a><span class="sb-ref-summary-type">Promise&lt;...any&gt;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--method" aria-hidden="true"></span><a href="#methods-tap">tap</a><span class="sb-ref-summary-type">Promise&lt;...any&gt;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--method" aria-hidden="true"></span><a href="#methods-andthencall">andThenCall</a><span class="sb-ref-summary-type">Promise</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--method" aria-hidden="true"></span><a href="#methods-andthenreturn">andThenReturn</a><span class="sb-ref-summary-type">Promise</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--method" aria-hidden="true"></span><a href="#methods-cancel">cancel</a><span class="sb-ref-summary-type">void</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--method" aria-hidden="true"></span><a href="#methods-finally">finally</a><span class="sb-ref-summary-type">Promise&lt;...any&gt;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--method" aria-hidden="true"></span><a href="#methods-finallycall">finallyCall</a><span class="sb-ref-summary-type">Promise</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--method" aria-hidden="true"></span><a href="#methods-finallyreturn">finallyReturn</a><span class="sb-ref-summary-type">Promise</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--method" aria-hidden="true"></span><a href="#methods-awaitstatus">awaitStatus</a><span class="sb-ref-summary-type">Status, ...any</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--method" aria-hidden="true"></span><a href="#methods-await">await</a><span class="sb-ref-summary-type">boolean, ...any</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--method" aria-hidden="true"></span><a href="#methods-expect">expect</a><span class="sb-ref-summary-type">...any</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--method" aria-hidden="true"></span><a href="#methods-now">now</a><span class="sb-ref-summary-type">Promise</span></div></td></tr></tbody></table></div><div class="sb-ref-summary-group"><div class="sb-ref-summary-group-title">Functions</div><table class="sb-ref-summary-table"><tbody><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-new">new</a><span class="sb-ref-summary-type">Promise</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-defer">defer</a><span class="sb-ref-summary-type">Promise</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-resolve">resolve</a><span class="sb-ref-summary-type">Promise&lt;...any&gt;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-reject">reject</a><span class="sb-ref-summary-type">Promise&lt;...any&gt;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-try">try</a><span class="sb-ref-summary-type">Promise</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-all">all</a><span class="sb-ref-summary-type">Promise&lt;&#123;T&#125;&gt;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-fold">fold</a><span class="sb-ref-summary-type">void</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-some">some</a><span class="sb-ref-summary-type">Promise&lt;&#123;T&#125;&gt;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-any">any</a><span class="sb-ref-summary-type">Promise&lt;T&gt;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-allsettled">allSettled</a><span class="sb-ref-summary-type">Promise&lt;&#123;Status&#125;&gt;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-race">race</a><span class="sb-ref-summary-type">Promise&lt;T&gt;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-each">each</a><span class="sb-ref-summary-type">Promise&lt;&#123;U&#125;&gt;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-is">is</a><span class="sb-ref-summary-type">boolean</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-promisify">promisify</a><span class="sb-ref-summary-type">(...: any) -&gt; Promise</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-delay">delay</a><span class="sb-ref-summary-type">Promise&lt;number&gt;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-retry">retry</a><span class="sb-ref-summary-type">Promise&lt;T&gt;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-retrywithdelay">retryWithDelay</a><span class="sb-ref-summary-type">Promise&lt;T&gt;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-fromevent">fromEvent</a><span class="sb-ref-summary-type">Promise&lt;P&gt;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-onunhandledrejection">onUnhandledRejection</a><span class="sb-ref-summary-type">() -&gt; ()</span></div></td></tr></tbody></table></div><div class="sb-ref-summary-group"><div class="sb-ref-summary-group-title">Types</div><table class="sb-ref-summary-table"><tbody><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--type" aria-hidden="true"></span><a href="#types-status">Status</a><span class="sb-ref-summary-type">type</span></div></td></tr></tbody></table></div></div>
+
+<a id="properties"></a>
+## Properties
+
+<a id="properties-status"></a>
+<div class="sb-ref-member">
+### Status
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--property">Property</span><span class="sb-ref-meta-type"><code>Status</code></span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L212" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-tags"><span class="sb-ref-tag">enums</span></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise.Status: Status</code></pre></div>
+
+A table containing all members of the `Status` enum, e.g., `Promise.Status.Resolved`.
+</div>
+
+<a id="methods"></a>
+## Methods
+
+<a id="methods-timeout"></a>
+<div class="sb-ref-member">
+### timeout
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Method</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L1090" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise:timeout(
+  seconds: number,
+  rejectionValue?: any
+) -&gt; Promise</code></pre></div>
+
+Returns a new Promise that resolves if the chained Promise resolves within `seconds` seconds, or rejects if execution time exceeds `seconds`. The chained Promise will be cancelled if the timeout is reached.
+
+Rejects with `rejectionValue` if it is non-nil. If a `rejectionValue` is not given, it will reject with a `Promise.Error(Promise.Error.Kind.TimedOut)`. This can be checked with [[Error.isKind]].
+
+```lua
+getSomething():timeout(5):andThen(function(something)
+	-- got something and it only took at max 5 seconds
+end):catch(function(e)
+	-- Either getting something failed or the time was exceeded.
+
+	if Promise.Error.isKind(e, Promise.Error.Kind.TimedOut) then
+		warn("Operation timed out!")
+	else
+		warn("Operation encountered an error!")
+	end
+end)
+```
+
+Sugar for:
+
+```lua
+Promise.race({
+	Promise.delay(seconds):andThen(function()
+		return Promise.reject(
+			rejectionValue == nil
+			and Promise.Error.new({ kind = Promise.Error.Kind.TimedOut })
+			or rejectionValue
+		)
+	end),
+	promise
+})
+```
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>seconds</code><span class="sb-ref-param-type">number</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>number</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>rejectionValue?</code><span class="sb-ref-param-type">any</span></div><div class="sb-ref-param-desc">The value to reject with if the timeout is reached</div><div class="sb-ref-param-meta"><span>Type</span> <code>any</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise</code></div></div></div>
+</div>
+
+<a id="methods-getstatus"></a>
+<div class="sb-ref-member">
+### getStatus
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Method</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L1114" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise:getStatus()
+  -&gt; Status</code></pre></div>
+
+Returns the current Promise status.
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Status</code></div></div></div>
+</div>
+
+<a id="methods-andthen"></a>
+<div class="sb-ref-member">
+### andThen
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Method</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L1193" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise:andThen(
+  successHandler: (...: any) -&gt; ...any,
+  failureHandler?: (...: any) -&gt; ...any
+) -&gt; Promise&lt;...any&gt;</code></pre></div>
+
+Chains onto an existing Promise and returns a new Promise.
+
+:::warning
+Within the failure handler, you should never assume that the rejection value is a string. Some rejections within the Promise library are represented by [[Error]] objects. If you want to treat it as a string for debugging, you should call `tostring` on it first.
+:::
+
+You can return a Promise from the success or failure handler and it will be chained onto.
+
+Calling `andThen` on a cancelled Promise returns a cancelled Promise.
+
+:::tip
+If the Promise returned by `andThen` is cancelled, `successHandler` and `failureHandler` will not run.
+
+To run code no matter what, use [Promise:finally].
+:::
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>successHandler</code><span class="sb-ref-param-type">(...: any) -&gt; ...any</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>(...: any) -&gt; ...any</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>failureHandler?</code><span class="sb-ref-param-type">(...: any) -&gt; ...any</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>(...: any) -&gt; ...any</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise&lt;...any&gt;</code></div></div></div>
+</div>
+
+<a id="methods-catch"></a>
+<div class="sb-ref-member">
+### catch
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Method</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L1220" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise:catch(
+  failureHandler: (...: any) -&gt; ...any
+) -&gt; Promise&lt;...any&gt;</code></pre></div>
+
+Shorthand for `Promise:andThen(nil, failureHandler)`.
+
+Returns a Promise that resolves if the `failureHandler` worked without encountering an additional error.
+
+:::warning
+Within the failure handler, you should never assume that the rejection value is a string. Some rejections within the Promise library are represented by [[Error]] objects. If you want to treat it as a string for debugging, you should call `tostring` on it first.
+:::
+
+Calling `catch` on a cancelled Promise returns a cancelled Promise.
+
+:::tip
+If the Promise returned by `catch` is cancelled,  `failureHandler` will not run.
+
+To run code no matter what, use [Promise:finally].
+:::
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>failureHandler</code><span class="sb-ref-param-type">(...: any) -&gt; ...any</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>(...: any) -&gt; ...any</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise&lt;...any&gt;</code></div></div></div>
+</div>
+
+<a id="methods-tap"></a>
+<div class="sb-ref-member">
+### tap
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Method</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L1241" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise:tap(
+  tapHandler: (...: any) -&gt; ...any
+) -&gt; Promise&lt;...any&gt;</code></pre></div>
+
+Similar to [Promise.andThen](#andthen), except the return value is the same as the value passed to the handler. In other words, you can insert a `:tap` into a Promise chain without affecting the value that downstream Promises receive.
+
+```lua
+	getTheValue()
+	:tap(print)
+	:andThen(function(theValue)
+		print("Got", theValue, "even though print returns nil!")
+	end)
+```
+
+If you return a Promise from the tap handler callback, its value will be discarded but `tap` will still wait until it resolves before passing the original value through.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tapHandler</code><span class="sb-ref-param-type">(...: any) -&gt; ...any</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>(...: any) -&gt; ...any</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise&lt;...any&gt;</code></div></div></div>
+</div>
+
+<a id="methods-andthencall"></a>
+<div class="sb-ref-member">
+### andThenCall
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Method</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L1276" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise:andThenCall(
+  callback: (...: any) -&gt; any,
+  ...?: any
+) -&gt; Promise</code></pre></div>
+
+Attaches an `andThen` handler to this Promise that calls the given callback with the predefined arguments. The resolved value is discarded.
+
+```lua
+	promise:andThenCall(someFunction, "some", "arguments")
+```
+
+This is sugar for
+
+```lua
+	promise:andThen(function()
+	return someFunction("some", "arguments")
+	end)
+```
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>callback</code><span class="sb-ref-param-type">(...: any) -&gt; any</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>(...: any) -&gt; any</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>...?</code><span class="sb-ref-param-type">any</span></div><div class="sb-ref-param-desc">Additional arguments which will be passed to `callback`</div><div class="sb-ref-param-meta"><span>Type</span> <code>any</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise</code></div></div></div>
+</div>
+
+<a id="methods-andthenreturn"></a>
+<div class="sb-ref-member">
+### andThenReturn
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Method</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L1306" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise:andThenReturn(
+  ...: any
+) -&gt; Promise</code></pre></div>
+
+Attaches an `andThen` handler to this Promise that discards the resolved value and returns the given value from it.
+
+```lua
+	promise:andThenReturn("some", "values")
+```
+
+This is sugar for
+
+```lua
+	promise:andThen(function()
+		return "some", "values"
+	end)
+```
+
+:::caution
+Promises are eager, so if you pass a Promise to `andThenReturn`, it will begin executing before `andThenReturn` is reached in the chain. Likewise, if you pass a Promise created from [[Promise.reject]] into `andThenReturn`, it's possible that this will trigger the unhandled rejection warning. If you need to return a Promise, it's usually best practice to use [[Promise.andThen]].
+:::
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>...</code><span class="sb-ref-param-type">any</span></div><div class="sb-ref-param-desc">Values to return from the function</div><div class="sb-ref-param-meta"><span>Type</span> <code>any</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise</code></div></div></div>
+</div>
+
+<a id="methods-cancel"></a>
+<div class="sb-ref-member">
+### cancel
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Method</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L1324" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise:cancel()
+  -&gt; nil</code></pre></div>
+
+Cancels this promise, preventing the promise from resolving or rejecting. Does not do anything if the promise is already settled.
+
+Cancellations will propagate upwards and downwards through chained promises.
+
+Promises will only be cancelled if all of their consumers are also cancelled. This is to say that if you call `andThen` twice on the same promise, and you cancel only one of the child promises, it will not cancel the parent promise until the other child promise is also cancelled.
+
+```lua
+	promise:cancel()
+```
+</div>
+
+<a id="methods-finally"></a>
+<div class="sb-ref-member">
+### finally
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Method</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L1473" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise:finally(
+  finallyHandler: (status: Status) -&gt; ...any
+) -&gt; Promise&lt;...any&gt;</code></pre></div>
+
+Set a handler that will be called regardless of the promise's fate. The handler is called when the promise is
+resolved, rejected, *or* cancelled.
+
+Returns a new Promise that:
+- resolves with the same values that this Promise resolves with.
+- rejects with the same values that this Promise rejects with.
+- is cancelled if this Promise is cancelled.
+
+If the value you return from the handler is a Promise:
+- We wait for the Promise to resolve, but we ultimately discard the resolved value.
+- If the returned Promise rejects, the Promise returned from `finally` will reject with the rejected value from the
+*returned* promise.
+- If the `finally` Promise is cancelled, and you returned a Promise from the handler, we cancel that Promise too.
+
+Otherwise, the return value from the `finally` handler is entirely discarded.
+
+:::note Cancellation
+As of Promise v4, `Promise:finally` does not count as a consumer of the parent Promise for cancellation purposes.
+This means that if all of a Promise's consumers are cancelled and the only remaining callbacks are finally handlers,
+the Promise is cancelled and the finally callbacks run then and there.
+
+Cancellation still propagates through the `finally` Promise though: if you cancel the `finally` Promise, it can cancel
+its parent Promise if it had no other consumers. Likewise, if the parent Promise is cancelled, the `finally` Promise
+will also be cancelled.
+:::
+
+```lua
+local thing = createSomething()
+
+doSomethingWith(thing)
+	:andThen(function()
+		print("It worked!")
+		-- do something..
+	end)
+	:catch(function()
+		warn("Oh no it failed!")
+	end)
+	:finally(function()
+		-- either way, destroy thing
+
+		thing:Destroy()
+	end)
+
+```
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>finallyHandler</code><span class="sb-ref-param-type">(status: Status) -&gt; ...any</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>(status: Status) -&gt; ...any</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise&lt;...any&gt;</code></div></div></div>
+</div>
+
+<a id="methods-finallycall"></a>
+<div class="sb-ref-member">
+### finallyCall
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Method</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L1487" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise:finallyCall(
+  callback: (...: any) -&gt; any,
+  ...?: any
+) -&gt; Promise</code></pre></div>
+
+Same as `andThenCall`, except for `finally`.
+
+Attaches a `finally` handler to this Promise that calls the given callback with the predefined arguments.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>callback</code><span class="sb-ref-param-type">(...: any) -&gt; any</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>(...: any) -&gt; any</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>...?</code><span class="sb-ref-param-type">any</span></div><div class="sb-ref-param-desc">Additional arguments which will be passed to `callback`</div><div class="sb-ref-param-meta"><span>Type</span> <code>any</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise</code></div></div></div>
+</div>
+
+<a id="methods-finallyreturn"></a>
+<div class="sb-ref-member">
+### finallyReturn
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Method</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L1513" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise:finallyReturn(
+  ...: any
+) -&gt; Promise</code></pre></div>
+
+Attaches a `finally` handler to this Promise that discards the resolved value and returns the given value from it.
+
+```lua
+	promise:finallyReturn("some", "values")
+```
+
+This is sugar for
+
+```lua
+	promise:finally(function()
+		return "some", "values"
+	end)
+```
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>...</code><span class="sb-ref-param-type">any</span></div><div class="sb-ref-param-desc">Values to return from the function</div><div class="sb-ref-param-meta"><span>Type</span> <code>any</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise</code></div></div></div>
+</div>
+
+<a id="methods-awaitstatus"></a>
+<div class="sb-ref-member">
+### awaitStatus
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Method</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L1527" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise:awaitStatus()
+  -&gt; (Status, ...any)</code></pre></div>
+
+Yields the current thread until the given Promise completes. Returns the Promise's status, followed by the values that the promise resolved or rejected with.
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Status</code></div><div class="sb-ref-param-desc">The Status representing the fate of the Promise</div></div><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>...any</code></div><div class="sb-ref-param-desc">The values the Promise resolved or rejected with.</div></div></div>
+</div>
+
+<a id="methods-await"></a>
+<div class="sb-ref-member">
+### await
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Method</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L1580" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise:await()
+  -&gt; (boolean, ...any)</code></pre></div>
+
+Yields the current thread until the given Promise completes. Returns true if the Promise resolved, followed by the values that the promise resolved or rejected with.
+
+:::caution
+If the Promise gets cancelled, this function will return `false`, which is indistinguishable from a rejection. If you need to differentiate, you should use [[Promise.awaitStatus]] instead.
+:::
+
+```lua
+	local worked, value = getTheValue():await()
+
+if worked then
+	print("got", value)
+else
+	warn("it failed")
+end
+```
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>boolean</code></div><div class="sb-ref-param-desc">`true` if the Promise successfully resolved</div></div><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>...any</code></div><div class="sb-ref-param-desc">The values the Promise resolved or rejected with.</div></div></div>
+</div>
+
+<a id="methods-expect"></a>
+<div class="sb-ref-member">
+### expect
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Method</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L1617" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise:expect()
+  -&gt; ...any</code></pre></div>
+
+Yields the current thread until the given Promise completes. Returns the values that the promise resolved with.
+
+```lua
+local worked = pcall(function()
+	print("got", getTheValue():expect())
+end)
+
+if not worked then
+	warn("it failed")
+end
+```
+
+This is essentially sugar for:
+
+```lua
+select(2, assert(promise:await()))
+```
+
+**Errors** if the Promise rejects or gets cancelled.
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>...any</code></div><div class="sb-ref-param-desc">The values the Promise resolved with.</div></div></div>
+
+<div class="sb-ref-subhead">Errors</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-error-card"><div class="sb-ref-param-name"><code>any</code></div><div class="sb-ref-param-desc">Errors with the rejection value if this Promise rejects or gets cancelled.</div></div></div>
+</div>
+
+<a id="methods-now"></a>
+<div class="sb-ref-member">
+### now
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Method</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L1803" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise:now(
+  rejectionValue?: any
+) -&gt; Promise</code></pre></div>
+
+Chains a Promise from this one that is resolved if this Promise is already resolved, and rejected if it is not resolved at the time of calling `:now()`. This can be used to ensure your `andThen` handler occurs on the same frame as the root Promise execution.
+
+```lua
+doSomething()
+	:now()
+	:andThen(function(value)
+		print("Got", value, "synchronously.")
+	end)
+```
+
+If this Promise is still running, Rejected, or Cancelled, the Promise returned from `:now()` will reject with the `rejectionValue` if passed, otherwise with a `Promise.Error(Promise.Error.Kind.NotResolvedInTime)`. This can be checked with [[Error.isKind]].
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>rejectionValue?</code><span class="sb-ref-param-type">any</span></div><div class="sb-ref-param-desc">The value to reject with if the Promise isn&#39;t resolved</div><div class="sb-ref-param-meta"><span>Type</span> <code>any</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise</code></div></div></div>
+</div>
+
+<a id="functions"></a>
+## Functions
+
+<a id="functions-new"></a>
+<div class="sb-ref-member">
+### new
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L349" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise.new(
+  executor: (resolve: (...: any) -&gt; (), reject: (...: any) -&gt; (), onCancel: (abortHandler?: () -&gt; ()) -&gt; boolean) -&gt; ()
+) -&gt; Promise</code></pre></div>
+
+Construct a new Promise that will be resolved or rejected with the given callbacks.
+
+If you `resolve` with a Promise, it will be chained onto.
+
+You can safely yield within the executor function and it will not block the creating thread.
+
+```lua
+local myFunction()
+	return Promise.new(function(resolve, reject, onCancel)
+		wait(1)
+		resolve("Hello world!")
+	end)
+end
+
+myFunction():andThen(print)
+```
+
+You do not need to use `pcall` within a Promise. Errors that occur during execution will be caught and turned into a rejection automatically. If `error()` is called with a table, that table will be the rejection value. Otherwise, string errors will be converted into `Promise.Error(Promise.Error.Kind.ExecutionError)` objects for tracking debug information.
+
+You may register an optional cancellation hook by using the `onCancel` argument:
+
+* This should be used to abort any ongoing operations leading up to the promise being settled.
+* Call the `onCancel` function with a function callback as its only argument to set a hook which will in turn be called when/if the promise is cancelled.
+* `onCancel` returns `true` if the Promise was already cancelled when you called `onCancel`.
+* Calling `onCancel` with no argument will not override a previously set cancellation hook, but it will still return `true` if the Promise is currently cancelled.
+* You can set the cancellation hook at any time before resolving.
+* When a promise is cancelled, calls to `resolve` or `reject` will be ignored, regardless of if you set a cancellation hook or not.
+
+:::caution
+If the Promise is cancelled, the `executor` thread is closed with `coroutine.close` after the cancellation hook is called.
+
+You must perform any cleanup code in the cancellation hook: any time your executor yields, it **may never resume**.
+:::
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>executor</code><span class="sb-ref-param-type">(resolve: (...: any) -&gt; (), reject: (...: any) -&gt; (), onCancel: (abortHandler?: () -&gt; ()) -&gt; boolean) -&gt; ()</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>(resolve: (...: any) -&gt; (), reject: (...: any) -&gt; (), onCancel: (abortHandler?: () -&gt; ()) -&gt; boolean) -&gt; ()</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise</code></div></div></div>
+</div>
+
+<a id="functions-defer"></a>
+<div class="sb-ref-member">
+### defer
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L375" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise.defer(
+  executor: (resolve: (...: any) -&gt; (), reject: (...: any) -&gt; (), onCancel: (abortHandler?: () -&gt; ()) -&gt; boolean) -&gt; ()
+) -&gt; Promise</code></pre></div>
+
+The same as [Promise.new](#new), except execution begins after the next `Heartbeat` event.
+
+This is a spiritual replacement for `spawn`, but it does not suffer from the same [issues](https://eryn.io/gist/3db84579866c099cdd5bb2ff37947cec) as `spawn`.
+
+```lua
+local function waitForChild(instance, childName, timeout)
+  return Promise.defer(function(resolve, reject)
+	local child = instance:WaitForChild(childName, timeout)
+
+	;(child and resolve or reject)(child)
+  end)
+end
+```
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>executor</code><span class="sb-ref-param-type">(resolve: (...: any) -&gt; (), reject: (...: any) -&gt; (), onCancel: (abortHandler?: () -&gt; ()) -&gt; boolean) -&gt; ()</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>(resolve: (...: any) -&gt; (), reject: (...: any) -&gt; (), onCancel: (abortHandler?: () -&gt; ()) -&gt; boolean) -&gt; ()</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise</code></div></div></div>
+</div>
+
+<a id="functions-resolve"></a>
+<div class="sb-ref-member">
+### resolve
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L416" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise.resolve(
+  ...: any
+) -&gt; Promise&lt;...any&gt;</code></pre></div>
+
+Creates an immediately resolved Promise with the given value.
+
+```lua
+-- Example using Promise.resolve to deliver cached values:
+function getSomething(name)
+	if cache[name] then
+		return Promise.resolve(cache[name])
+	else
+		return Promise.new(function(resolve, reject)
+			local thing = getTheThing()
+			cache[name] = thing
+
+			resolve(thing)
+		end)
+	end
+end
+```
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>...</code><span class="sb-ref-param-type">any</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>any</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise&lt;...any&gt;</code></div></div></div>
+</div>
+
+<a id="functions-reject"></a>
+<div class="sb-ref-member">
+### reject
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L433" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise.reject(
+  ...: any
+) -&gt; Promise&lt;...any&gt;</code></pre></div>
+
+Creates an immediately rejected Promise with the given value.
+
+:::caution
+Something needs to consume this rejection (i.e. `:catch()` it), otherwise it will emit an unhandled Promise rejection warning on the next frame. Thus, you should not create and store rejected Promises for later use. Only create them on-demand as needed.
+:::
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>...</code><span class="sb-ref-param-type">any</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>any</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise&lt;...any&gt;</code></div></div></div>
+</div>
+
+<a id="functions-try"></a>
+<div class="sb-ref-member">
+### try
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L475" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise.try(
+  callback: (...: T...) -&gt; ...any,
+  ...: T...
+) -&gt; Promise</code></pre></div>
+
+Begins a Promise chain, calling a function and returning a Promise resolving with its return value. If the function errors, the returned Promise will be rejected with the error. You can safely yield within the Promise.try callback.
+
+:::info
+`Promise.try` is similar to [Promise.promisify](#promisify), except the callback is invoked immediately instead of returning a new function.
+:::
+
+```lua
+Promise.try(function()
+	return math.random(1, 2) == 1 and "ok" or error("Oh an error!")
+end)
+	:andThen(function(text)
+		print(text)
+	end)
+	:catch(function(err)
+		warn("Something went wrong")
+	end)
+```
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>callback</code><span class="sb-ref-param-type">(...: T...) -&gt; ...any</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>(...: T...) -&gt; ...any</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>...</code><span class="sb-ref-param-type">T...</span></div><div class="sb-ref-param-desc">Additional arguments passed to `callback`</div><div class="sb-ref-param-meta"><span>Type</span> <code>T...</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise</code></div></div></div>
+</div>
+
+<a id="functions-all"></a>
+<div class="sb-ref-member">
+### all
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L589" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise.all(
+  promises: &#123;Promise&lt;T&gt;&#125;
+) -&gt; Promise&lt;&#123;T&#125;&gt;</code></pre></div>
+
+Accepts an array of Promises and returns a new promise that:
+* is resolved after all input promises resolve.
+* is rejected if *any* input promises reject.
+
+:::info
+Only the first return value from each promise will be present in the resulting array.
+:::
+
+After any input Promise rejects, all other input Promises that are still pending will be cancelled if they have no other consumers.
+
+```lua
+local promises = {
+	returnsAPromise("example 1"),
+	returnsAPromise("example 2"),
+	returnsAPromise("example 3"),
+}
+
+return Promise.all(promises)
+```
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>promises</code><span class="sb-ref-param-type">&#123;Promise&lt;T&gt;&#125;</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;Promise&lt;T&gt;&#125;</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise&lt;&#123;T&#125;&gt;</code></div></div></div>
+</div>
+
+<a id="functions-fold"></a>
+<div class="sb-ref-member">
+### fold
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L618" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise.fold(
+  list: &#123;T | Promise&lt;T&gt;&#125;,
+  reducer: (accumulator: U, value: T, index: number) -&gt; U | Promise&lt;U&gt;,
+  initialValue: U
+) -&gt; nil</code></pre></div>
+
+Folds an array of values or promises into a single value. The array is traversed sequentially.
+
+The reducer function can return a promise or value directly. Each iteration receives the resolved value from the previous, and the first receives your defined initial value.
+
+The folding will stop at the first rejection encountered.
+```lua
+local basket = {"blueberry", "melon", "pear", "melon"}
+Promise.fold(basket, function(cost, fruit)
+	if fruit == "blueberry" then
+		return cost -- blueberries are free!
+	else
+		-- call a function that returns a promise with the fruit price
+		return fetchPrice(fruit):andThen(function(fruitCost)
+			return cost + fruitCost
+		end)
+	end
+end, 0)
+```
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>list</code><span class="sb-ref-param-type">&#123;T | Promise&lt;T&gt;&#125;</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;T | Promise&lt;T&gt;&#125;</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>reducer</code><span class="sb-ref-param-type">(accumulator: U, value: T, index: number) -&gt; U | Promise&lt;U&gt;</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>(accumulator: U, value: T, index: number) -&gt; U | Promise&lt;U&gt;</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>initialValue</code><span class="sb-ref-param-type">U</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>U</code></div></div></div>
+</div>
+
+<a id="functions-some"></a>
+<div class="sb-ref-member">
+### some
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L651" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise.some(
+  promises: &#123;Promise&lt;T&gt;&#125;,
+  count: number
+) -&gt; Promise&lt;&#123;T&#125;&gt;</code></pre></div>
+
+Accepts an array of Promises and returns a Promise that is resolved as soon as `count` Promises are resolved from the input array. The resolved array values are in the order that the Promises resolved in. When this Promise resolves, all other pending Promises are cancelled if they have no other consumers.
+
+`count` 0 results in an empty array. The resultant array will never have more than `count` elements.
+
+```lua
+local promises = {
+	returnsAPromise("example 1"),
+	returnsAPromise("example 2"),
+	returnsAPromise("example 3"),
+}
+
+return Promise.some(promises, 2) -- Only resolves with first 2 promises to resolve
+```
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>promises</code><span class="sb-ref-param-type">&#123;Promise&lt;T&gt;&#125;</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;Promise&lt;T&gt;&#125;</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>count</code><span class="sb-ref-param-type">number</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>number</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise&lt;&#123;T&#125;&gt;</code></div></div></div>
+</div>
+
+<a id="functions-any"></a>
+<div class="sb-ref-member">
+### any
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L675" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise.any(
+  promises: &#123;Promise&lt;T&gt;&#125;
+) -&gt; Promise&lt;T&gt;</code></pre></div>
+
+Accepts an array of Promises and returns a Promise that is resolved as soon as *any* of the input Promises resolves. It will reject only if *all* input Promises reject. As soon as one Promises resolves, all other pending Promises are cancelled if they have no other consumers.
+
+Resolves directly with the value of the first resolved Promise. This is essentially [[Promise.some]] with `1` count, except the Promise resolves with the value directly instead of an array with one element.
+
+```lua
+local promises = {
+	returnsAPromise("example 1"),
+	returnsAPromise("example 2"),
+	returnsAPromise("example 3"),
+}
+
+return Promise.any(promises) -- Resolves with first value to resolve (only rejects if all 3 rejected)
+```
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>promises</code><span class="sb-ref-param-type">&#123;Promise&lt;T&gt;&#125;</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;Promise&lt;T&gt;&#125;</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise&lt;T&gt;</code></div></div></div>
+</div>
+
+<a id="functions-allsettled"></a>
+<div class="sb-ref-member">
+### allSettled
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L697" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise.allSettled(
+  promises: &#123;Promise&lt;T&gt;&#125;
+) -&gt; Promise&lt;&#123;Status&#125;&gt;</code></pre></div>
+
+Accepts an array of Promises and returns a new Promise that resolves with an array of in-place Statuses when all input Promises have settled. This is equivalent to mapping `promise:finally` over the array of Promises.
+
+```lua
+local promises = {
+	returnsAPromise("example 1"),
+	returnsAPromise("example 2"),
+	returnsAPromise("example 3"),
+}
+
+return Promise.allSettled(promises)
+```
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>promises</code><span class="sb-ref-param-type">&#123;Promise&lt;T&gt;&#125;</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;Promise&lt;T&gt;&#125;</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise&lt;&#123;Status&#125;&gt;</code></div></div></div>
+</div>
+
+<a id="functions-race"></a>
+<div class="sb-ref-member">
+### race
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L775" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise.race(
+  promises: &#123;Promise&lt;T&gt;&#125;
+) -&gt; Promise&lt;T&gt;</code></pre></div>
+
+Accepts an array of Promises and returns a new promise that is resolved or rejected as soon as any Promise in the array resolves or rejects.
+
+:::warning
+If the first Promise to settle from the array settles with a rejection, the resulting Promise from `race` will reject.
+
+If you instead want to tolerate rejections, and only care about at least one Promise resolving, you should use [Promise.any](#any) or [Promise.some](#some) instead.
+:::
+
+All other Promises that don't win the race will be cancelled if they have no other consumers.
+
+```lua
+local promises = {
+	returnsAPromise("example 1"),
+	returnsAPromise("example 2"),
+	returnsAPromise("example 3"),
+}
+
+return Promise.race(promises) -- Only returns 1st value to resolve or reject
+```
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>promises</code><span class="sb-ref-param-type">&#123;Promise&lt;T&gt;&#125;</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;Promise&lt;T&gt;&#125;</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise&lt;T&gt;</code></div></div></div>
+</div>
+
+<a id="functions-each"></a>
+<div class="sb-ref-member">
+### each
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L870" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise.each(
+  list: &#123;T | Promise&lt;T&gt;&#125;,
+  predicate: (value: T, index: number) -&gt; U | Promise&lt;U&gt;
+) -&gt; Promise&lt;&#123;U&#125;&gt;</code></pre></div>
+
+Iterates serially over the given an array of values, calling the predicate callback on each value before continuing.
+
+If the predicate returns a Promise, we wait for that Promise to resolve before moving on to the next item
+in the array.
+
+:::info
+`Promise.each` is similar to `Promise.all`, except the Promises are ran in order instead of all at once.
+
+But because Promises are eager, by the time they are created, they're already running. Thus, we need a way to defer creation of each Promise until a later time.
+
+The predicate function exists as a way for us to operate on our data instead of creating a new closure for each Promise. If you would prefer, you can pass in an array of functions, and in the predicate, call the function and return its return value.
+:::
+
+```lua
+Promise.each({
+	"foo",
+	"bar",
+	"baz",
+	"qux"
+}, function(value, index)
+	return Promise.delay(1):andThen(function()
+	print(("%d) Got %s!"):format(index, value))
+	end)
+end)
+
+--[[
+	(1 second passes)
+	> 1) Got foo!
+	(1 second passes)
+	> 2) Got bar!
+	(1 second passes)
+	> 3) Got baz!
+	(1 second passes)
+	> 4) Got qux!
+]]
+```
+
+If the Promise a predicate returns rejects, the Promise from `Promise.each` is also rejected with the same value.
+
+If the array of values contains a Promise, when we get to that point in the list, we wait for the Promise to resolve before calling the predicate with the value.
+
+If a Promise in the array of values is already Rejected when `Promise.each` is called, `Promise.each` rejects with that value immediately (the predicate callback will never be called even once). If a Promise in the list is already Cancelled when `Promise.each` is called, `Promise.each` rejects with `Promise.Error(Promise.Error.Kind.AlreadyCancelled)`. If a Promise in the array of values is Started at first, but later rejects, `Promise.each` will reject with that value and iteration will not continue once iteration encounters that value.
+
+Returns a Promise containing an array of the returned/resolved values from the predicate for each item in the array of values.
+
+If this Promise returned from `Promise.each` rejects or is cancelled for any reason, the following are true:
+- Iteration will not continue.
+- Any Promises within the array of values will now be cancelled if they have no other consumers.
+- The Promise returned from the currently active predicate will be cancelled if it hasn't resolved yet.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>list</code><span class="sb-ref-param-type">&#123;T | Promise&lt;T&gt;&#125;</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;T | Promise&lt;T&gt;&#125;</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>predicate</code><span class="sb-ref-param-type">(value: T, index: number) -&gt; U | Promise&lt;U&gt;</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>(value: T, index: number) -&gt; U | Promise&lt;U&gt;</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise&lt;&#123;U&#125;&gt;</code></div></div></div>
+</div>
+
+<a id="functions-is"></a>
+<div class="sb-ref-member">
+### is
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L969" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise.is(
+  object: any
+) -&gt; boolean</code></pre></div>
+
+Checks whether the given object is a Promise via duck typing. This only checks if the object is a table and has an `andThen` method.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>object</code><span class="sb-ref-param-type">any</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>any</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>boolean</code></div><div class="sb-ref-param-desc">`true` if the given `object` is a Promise.</div></div></div>
+</div>
+
+<a id="functions-promisify"></a>
+<div class="sb-ref-member">
+### promisify
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L1018" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise.promisify(
+  callback: (...: any) -&gt; ...any
+) -&gt; (...: any) -&gt; Promise</code></pre></div>
+
+Wraps a function that yields into one that returns a Promise.
+
+Any errors that occur while executing the function will be turned into rejections.
+
+:::info
+`Promise.promisify` is similar to [Promise.try](#try), except the callback is returned as a callable function instead of being invoked immediately.
+:::
+
+```lua
+local sleep = Promise.promisify(wait)
+
+sleep(1):andThen(print)
+```
+
+```lua
+local isPlayerInGroup = Promise.promisify(function(player, groupId)
+	return player:IsInGroup(groupId)
+end)
+```
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>callback</code><span class="sb-ref-param-type">(...: any) -&gt; ...any</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>(...: any) -&gt; ...any</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>(...: any) -&gt; Promise</code></div></div></div>
+</div>
+
+<a id="functions-delay"></a>
+<div class="sb-ref-member">
+### delay
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L1042" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise.delay(
+  seconds: number
+) -&gt; Promise&lt;number&gt;</code></pre></div>
+
+Returns a Promise that resolves after `seconds` seconds have passed. The Promise resolves with the actual amount of time that was waited.
+
+This function is a wrapper around `task.delay`.
+
+:::warning
+Passing NaN, +Infinity, -Infinity, 0, or any other number less than the duration of a Heartbeat will cause the promise to resolve on the very next Heartbeat.
+:::
+
+```lua
+	Promise.delay(5):andThenCall(print, "This prints after 5 seconds")
+```
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>seconds</code><span class="sb-ref-param-type">number</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>number</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise&lt;number&gt;</code></div></div></div>
+</div>
+
+<a id="functions-retry"></a>
+<div class="sb-ref-member">
+### retry
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L1848" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise.retry(
+  callback: (...: P) -&gt; Promise&lt;T&gt;,
+  times: number,
+  ...?: P
+) -&gt; Promise&lt;T&gt;</code></pre></div>
+
+Repeatedly calls a Promise-returning function up to `times` number of times, until the returned Promise resolves.
+
+If the amount of retries is exceeded, the function will return the latest rejected Promise.
+
+```lua
+local function canFail(a, b, c)
+	return Promise.new(function(resolve, reject)
+		-- do something that can fail
+
+		local failed, thing = doSomethingThatCanFail(a, b, c)
+
+		if failed then
+			reject("it failed")
+		else
+			resolve(thing)
+		end
+	end)
+end
+
+local MAX_RETRIES = 10
+local value = Promise.retry(canFail, MAX_RETRIES, "foo", "bar", "baz") -- args to send to canFail
+```
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>callback</code><span class="sb-ref-param-type">(...: P) -&gt; Promise&lt;T&gt;</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>(...: P) -&gt; Promise&lt;T&gt;</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>times</code><span class="sb-ref-param-type">number</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>number</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>...?</code><span class="sb-ref-param-type">P</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>P</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise&lt;T&gt;</code></div></div></div>
+</div>
+
+<a id="functions-retrywithdelay"></a>
+<div class="sb-ref-member">
+### retryWithDelay
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L1876" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise.retryWithDelay(
+  callback: (...: P) -&gt; Promise&lt;T&gt;,
+  times: number,
+  seconds: number,
+  ...?: P
+) -&gt; Promise&lt;T&gt;</code></pre></div>
+
+Repeatedly calls a Promise-returning function up to `times` number of times, waiting `seconds` seconds between each
+retry, until the returned Promise resolves.
+
+If the amount of retries is exceeded, the function will return the latest rejected Promise.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>callback</code><span class="sb-ref-param-type">(...: P) -&gt; Promise&lt;T&gt;</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>(...: P) -&gt; Promise&lt;T&gt;</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>times</code><span class="sb-ref-param-type">number</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>number</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>seconds</code><span class="sb-ref-param-type">number</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>number</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>...?</code><span class="sb-ref-param-type">P</span></div><div class="sb-ref-param-meta"><span>Type</span> <code>P</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise&lt;T&gt;</code></div></div></div>
+</div>
+
+<a id="functions-fromevent"></a>
+<div class="sb-ref-member">
+### fromEvent
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L1918" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise.fromEvent(
+  event: Event,
+  predicate?: (...: P) -&gt; boolean
+) -&gt; Promise&lt;P&gt;</code></pre></div>
+
+Converts an event into a Promise which resolves the next time the event fires.
+
+The optional `predicate` callback, if passed, will receive the event arguments and should return `true` or `false`, based on if this fired event should resolve the Promise or not. If `true`, the Promise resolves. If `false`, nothing happens and the predicate will be rerun the next time the event fires.
+
+The Promise will resolve with the event arguments.
+
+:::tip
+This function will work given any object with a `Connect` method. This includes all Roblox events.
+:::
+
+```lua
+-- Creates a Promise which only resolves when `somePart` is touched
+-- by a part named `"Something specific"`.
+return Promise.fromEvent(somePart.Touched, function(part)
+	return part.Name == "Something specific"
+end)
+```
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>event</code><span class="sb-ref-param-type">Event</span></div><div class="sb-ref-param-desc">Any object with a `Connect` method. This includes all Roblox events.</div><div class="sb-ref-param-meta"><span>Type</span> <code>Event</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>predicate?</code><span class="sb-ref-param-type">(...: P) -&gt; boolean</span></div><div class="sb-ref-param-desc">A function which determines if the Promise should resolve with the given value, or wait for the next event to check again.</div><div class="sb-ref-param-meta"><span>Type</span> <code>(...: P) -&gt; boolean</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>Promise&lt;P&gt;</code></div></div></div>
+</div>
+
+<a id="functions-onunhandledrejection"></a>
+<div class="sb-ref-member">
+### onUnhandledRejection
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L1970" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>Promise.onUnhandledRejection(
+  callback: (promise: Promise, ...: any)
+) -&gt; () -&gt; ()</code></pre></div>
+
+Registers a callback that runs when an unhandled rejection happens. An unhandled rejection happens when a Promise
+is rejected, and the rejection is not observed with `:catch`.
+
+The callback is called with the actual promise that rejected, followed by the rejection values.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>callback</code><span class="sb-ref-param-type">(promise: Promise, ...: any)</span></div><div class="sb-ref-param-desc">A callback that runs when an unhandled rejection happens.</div><div class="sb-ref-param-meta"><span>Type</span> <code>(promise: Promise, ...: any)</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>() -&gt; ()</code></div><div class="sb-ref-param-desc">Function that unregisters the `callback` when called</div></div></div>
+</div>
+
+<a id="types"></a>
+## Types
+
+<a id="types-status"></a>
+### Status
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--type">Type</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/Promise.luau#L205" target="_blank" rel="noreferrer">View Source</a></div>
+
+```lua
+type Status = {
+  Started: "Started"
+  Resolved: "Resolved"
+  Rejected: "Rejected"
+  Cancelled: "Cancelled"
+}
+```
+
+An enum value used to represent the Promise's status.

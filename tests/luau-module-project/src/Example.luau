@@ -1,7 +1,7 @@
 --[=[
 	@class Example
 	
-	Example class used for Moonwave tests.
+	Example class used for reference tests.
 ]=]
 local Example = {}
 Example.__index = Example

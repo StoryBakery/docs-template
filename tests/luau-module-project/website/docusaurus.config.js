@@ -24,12 +24,6 @@ module.exports = {
         theme: {
           customCss: path.resolve(__dirname, "src/css/custom.css"),
         },
-        moonwave: {
-          source: true,
-          labels: {
-            referenceType: "Engine Class",
-          },
-        },
       },
     ],
   ],

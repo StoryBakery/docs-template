@@ -1,0 +1,670 @@
+---
+title: TableUtil
+sidebar_label: TableUtil
+id: tableutil
+---
+
+
+<div class="sb-ref-header">
+<div class="sb-ref-kicker">Engine Class</div>
+<div class="sb-ref-title"><span class="sb-ref-title-icon" aria-hidden="true"></span><h1>TableUtil</h1></div>
+
+<div class="sb-ref-hero-meta"><div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--class">Class</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L7" target="_blank" rel="noreferrer">View Source</a></div></div>
+</div>
+
+루아 테이블을 다룰 때 자주 사용하는 유틸리티 함수를 묶어 제공합니다.
+배열과 딕셔너리 구조를 간결하게 조작할 수 있도록 도와줍니다.
+
+<a id="summary"></a>
+## Summary
+
+<div class="sb-ref-summary-groups"><div class="sb-ref-summary-group"><div class="sb-ref-summary-group-title">Functions</div><table class="sb-ref-summary-table"><tbody><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-count">count</a><span class="sb-ref-summary-type">number</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-deepcount">deepCount</a><span class="sb-ref-summary-type">number</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-includes">includes</a><span class="sb-ref-summary-type">boolean</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-isempty">isEmpty</a><span class="sb-ref-summary-type">boolean</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-isarray">isArray</a><span class="sb-ref-summary-type">boolean</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-isdict">isDict</a><span class="sb-ref-summary-type">boolean</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-deepclone">deepClone</a><span class="sb-ref-summary-type">T</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-reverse">reverse</a><span class="sb-ref-summary-type">void</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-reversed">reversed</a><span class="sb-ref-summary-type">&#123;any&#125;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-keys">keys</a><span class="sb-ref-summary-type">&#123;any&#125;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-values">values</a><span class="sb-ref-summary-type">&#123;any&#125;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-randomipair">randomIpair</a><span class="sb-ref-summary-type">number, any</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-randompair">randomPair</a><span class="sb-ref-summary-type">any, any</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-sorted">sorted</a><span class="sb-ref-summary-type">&#123;any&#125;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-slice">slice</a><span class="sb-ref-summary-type">&#123;any&#125;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-findvalue">findValue</a><span class="sb-ref-summary-type">any?</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-findindex">findIndex</a><span class="sb-ref-summary-type">any?</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-filter">filter</a><span class="sb-ref-summary-type">&#123;[any]: any&#125;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-map">map</a><span class="sb-ref-summary-type">&#123;any&#125;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-every">every</a><span class="sb-ref-summary-type">boolean</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-merge">merge</a><span class="sb-ref-summary-type">&#123;[any]: any&#125;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-mergearray">mergeArray</a><span class="sb-ref-summary-type">&#123;any&#125;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-mergedict">mergeDict</a><span class="sb-ref-summary-type">&#123;[any]: any&#125;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-fill">fill</a><span class="sb-ref-summary-type">&#123;any&#125;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-removedupes">removeDupes</a><span class="sb-ref-summary-type">&#123;any&#125;</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-deepfreeze">deepFreeze</a><span class="sb-ref-summary-type">void</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-shallowequal">shallowEqual</a><span class="sb-ref-summary-type">boolean</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-binarysearch">binarySearch</a><span class="sb-ref-summary-type">number?</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-bisectleft">bisectLeft</a><span class="sb-ref-summary-type">number</span></div></td></tr><tr><td><div class="sb-ref-summary-cell"><span class="sb-ref-summary-icon sb-ref-summary-icon--function" aria-hidden="true"></span><a href="#functions-bisectright">bisectRight</a><span class="sb-ref-summary-type">number</span></div></td></tr></tbody></table></div></div>
+
+<a id="functions"></a>
+## Functions
+
+<a id="functions-count"></a>
+<div class="sb-ref-member">
+### count
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L34" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.count(
+  tbl: &#123;any&#125;
+) -&gt; number</code></pre></div>
+
+테이블에 들어 있는 요소 수를 반환합니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">&#123;any&#125;</span></div><div class="sb-ref-param-desc">요소를 셀 테이블.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;any&#125;</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>number</code></div><div class="sb-ref-param-desc">요소 개수.</div></div></div>
+</div>
+
+<a id="functions-deepcount"></a>
+<div class="sb-ref-member">
+### deepCount
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L49" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.deepCount(
+  tbl: &#123;any&#125;
+) -&gt; number</code></pre></div>
+
+중첩 테이블을 모두 탐색해 요소 수를 계산합니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">&#123;any&#125;</span></div><div class="sb-ref-param-desc">요소를 셀 테이블.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;any&#125;</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>number</code></div><div class="sb-ref-param-desc">모든 하위 요소를 포함한 개수.</div></div></div>
+</div>
+
+<a id="functions-includes"></a>
+<div class="sb-ref-member">
+### includes
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L65" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.includes(
+  tbl: &#123;any&#125;,
+  value: any
+) -&gt; boolean</code></pre></div>
+
+테이블에 값이 포함되어 있는지 확인합니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">&#123;any&#125;</span></div><div class="sb-ref-param-desc">검색할 테이블.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;any&#125;</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>value</code><span class="sb-ref-param-type">any</span></div><div class="sb-ref-param-desc">찾을 값.</div><div class="sb-ref-param-meta"><span>Type</span> <code>any</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>boolean</code></div><div class="sb-ref-param-desc">값이 존재하면 true.</div></div></div>
+</div>
+
+<a id="functions-isempty"></a>
+<div class="sb-ref-member">
+### isEmpty
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L81" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.isEmpty(
+  tbl: &#123;any&#125;
+) -&gt; boolean</code></pre></div>
+
+테이블에 값이 전혀 없는지 확인합니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">&#123;any&#125;</span></div><div class="sb-ref-param-desc">검사할 테이블.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;any&#125;</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>boolean</code></div><div class="sb-ref-param-desc">비어 있으면 true.</div></div></div>
+</div>
+
+<a id="functions-isarray"></a>
+<div class="sb-ref-member">
+### isArray
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L92" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.isArray(
+  tbl: &#123;any&#125;
+) -&gt; boolean</code></pre></div>
+
+키가 1..n 형태인지 검사합니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">&#123;any&#125;</span></div><div class="sb-ref-param-desc">검사할 테이블.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;any&#125;</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>boolean</code></div><div class="sb-ref-param-desc">배열 형태면 true.</div></div></div>
+</div>
+
+<a id="functions-isdict"></a>
+<div class="sb-ref-member">
+### isDict
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L110" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.isDict(
+  tbl: &#123;any&#125;
+) -&gt; boolean</code></pre></div>
+
+배열이 아닌 사전 형태인지 검사합니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">&#123;any&#125;</span></div><div class="sb-ref-param-desc">검사할 테이블.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;any&#125;</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>boolean</code></div><div class="sb-ref-param-desc">사전 형태면 true.</div></div></div>
+</div>
+
+<a id="functions-deepclone"></a>
+<div class="sb-ref-member">
+### deepClone
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L121" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.deepClone(
+  tbl: T
+) -&gt; T</code></pre></div>
+
+모든 하위 테이블까지 재귀적으로 복제합니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">T</span></div><div class="sb-ref-param-desc">복제할 테이블.</div><div class="sb-ref-param-meta"><span>Type</span> <code>T</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>T</code></div><div class="sb-ref-param-desc">깊은 복사본.</div></div></div>
+</div>
+
+<a id="functions-reverse"></a>
+<div class="sb-ref-member">
+### reverse
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L137" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.reverse(
+  tbl: &#123;any&#125;
+) -&gt; nil</code></pre></div>
+
+배열형 테이블을 원본에서 역순으로 뒤집습니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">&#123;any&#125;</span></div><div class="sb-ref-param-desc">역순으로 바꿀 배열.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;any&#125;</code></div></div></div>
+</div>
+
+<a id="functions-reversed"></a>
+<div class="sb-ref-member">
+### reversed
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L156" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.reversed(
+  tbl: &#123;any&#125;
+) -&gt; &#123;any&#125;</code></pre></div>
+
+원본을 유지한 채 역순 배열을 반환합니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">&#123;any&#125;</span></div><div class="sb-ref-param-desc">복제 대상 배열.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;any&#125;</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>&#123;any&#125;</code></div><div class="sb-ref-param-desc">역순 배열 복사본.</div></div></div>
+</div>
+
+<a id="functions-keys"></a>
+<div class="sb-ref-member">
+### keys
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L177" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.keys(
+  tbl: &#123;[any]: any&#125;
+) -&gt; &#123;any&#125;</code></pre></div>
+
+테이블의 키를 배열로 반환합니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">&#123;[any]: any&#125;</span></div><div class="sb-ref-param-desc">키를 추출할 테이블.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;[any]: any&#125;</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>&#123;any&#125;</code></div><div class="sb-ref-param-desc">키 배열.</div></div></div>
+</div>
+
+<a id="functions-values"></a>
+<div class="sb-ref-member">
+### values
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L192" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.values(
+  tbl: &#123;[any]: any&#125;
+) -&gt; &#123;any&#125;</code></pre></div>
+
+테이블의 값을 배열로 반환합니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">&#123;[any]: any&#125;</span></div><div class="sb-ref-param-desc">값을 추출할 테이블.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;[any]: any&#125;</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>&#123;any&#125;</code></div><div class="sb-ref-param-desc">값 배열.</div></div></div>
+</div>
+
+<a id="functions-randomipair"></a>
+<div class="sb-ref-member">
+### randomIpair
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L208" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.randomIpair(
+  tbl: &#123;any&#125;
+) -&gt; (number, any)</code></pre></div>
+
+배열형 테이블에서 임의의 인덱스와 값을 돌려줍니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">&#123;any&#125;</span></div><div class="sb-ref-param-desc">대상 배열.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;any&#125;</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>number</code></div><div class="sb-ref-param-desc">선택된 인덱스.</div></div><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>any</code></div><div class="sb-ref-param-desc">선택된 값.</div></div></div>
+</div>
+
+<a id="functions-randompair"></a>
+<div class="sb-ref-member">
+### randomPair
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L221" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.randomPair(
+  tbl: &#123;[any]: any&#125;
+) -&gt; (any, any)</code></pre></div>
+
+사전형 테이블에서 임의의 키와 값을 돌려줍니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">&#123;[any]: any&#125;</span></div><div class="sb-ref-param-desc">대상 테이블.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;[any]: any&#125;</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>any</code></div><div class="sb-ref-param-desc">선택된 키.</div></div><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>any</code></div><div class="sb-ref-param-desc">선택된 값.</div></div></div>
+</div>
+
+<a id="functions-sorted"></a>
+<div class="sb-ref-member">
+### sorted
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L240" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.sorted(
+  tbl: &#123;any&#125;,
+  fn: ((any, any)-&gt;boolean)?
+) -&gt; &#123;any&#125;</code></pre></div>
+
+정렬 결과를 새 배열로 반환합니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">&#123;any&#125;</span></div><div class="sb-ref-param-desc">정렬할 배열.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;any&#125;</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>fn</code><span class="sb-ref-param-type">((any, any)-&gt;boolean)?</span></div><div class="sb-ref-param-desc">비교 함수.</div><div class="sb-ref-param-meta"><span>Type</span> <code>((any, any)-&gt;boolean)?</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>&#123;any&#125;</code></div><div class="sb-ref-param-desc">정렬된 배열.</div></div></div>
+</div>
+
+<a id="functions-slice"></a>
+<div class="sb-ref-member">
+### slice
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L256" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.slice(
+  tbl: &#123;any&#125;,
+  start: number?,
+  stop: number?,
+  step: number?
+) -&gt; &#123;any&#125;</code></pre></div>
+
+배열에서 지정한 구간을 잘라 새 배열로 돌려줍니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">&#123;any&#125;</span></div><div class="sb-ref-param-desc">대상 배열.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;any&#125;</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>start</code><span class="sb-ref-param-type">number?</span></div><div class="sb-ref-param-desc">시작 인덱스.</div><div class="sb-ref-param-meta"><span>Type</span> <code>number?</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>stop</code><span class="sb-ref-param-type">number?</span></div><div class="sb-ref-param-desc">끝 인덱스.</div><div class="sb-ref-param-meta"><span>Type</span> <code>number?</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>step</code><span class="sb-ref-param-type">number?</span></div><div class="sb-ref-param-desc">걸음.</div><div class="sb-ref-param-meta"><span>Type</span> <code>number?</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>&#123;any&#125;</code></div><div class="sb-ref-param-desc">잘라낸 배열.</div></div></div>
+</div>
+
+<a id="functions-findvalue"></a>
+<div class="sb-ref-member">
+### findValue
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L272" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.findValue(
+  tbl: &#123;[any]: any&#125;,
+  testFn: (any, any)-&gt;boolean
+) -&gt; any?</code></pre></div>
+
+조건에 맞는 첫 번째 값을 반환합니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">&#123;[any]: any&#125;</span></div><div class="sb-ref-param-desc">검색할 테이블.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;[any]: any&#125;</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>testFn</code><span class="sb-ref-param-type">(any, any)-&gt;boolean</span></div><div class="sb-ref-param-desc">필터 함수.</div><div class="sb-ref-param-meta"><span>Type</span> <code>(any, any)-&gt;boolean</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>any?</code></div><div class="sb-ref-param-desc">조건을 만족하는 값.</div></div></div>
+</div>
+
+<a id="functions-findindex"></a>
+<div class="sb-ref-member">
+### findIndex
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L289" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.findIndex(
+  tbl: &#123;[any]: any&#125;,
+  testFn: (any, any)-&gt;boolean
+) -&gt; any?</code></pre></div>
+
+조건에 맞는 첫 번째 키를 반환합니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">&#123;[any]: any&#125;</span></div><div class="sb-ref-param-desc">검색할 테이블.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;[any]: any&#125;</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>testFn</code><span class="sb-ref-param-type">(any, any)-&gt;boolean</span></div><div class="sb-ref-param-desc">필터 함수.</div><div class="sb-ref-param-meta"><span>Type</span> <code>(any, any)-&gt;boolean</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>any?</code></div><div class="sb-ref-param-desc">조건을 만족하는 키.</div></div></div>
+</div>
+
+<a id="functions-filter"></a>
+<div class="sb-ref-member">
+### filter
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L306" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.filter(
+  tbl: &#123;[any]: any&#125;,
+  filterFn: (any, any)-&gt;boolean
+) -&gt; &#123;[any]: any&#125;</code></pre></div>
+
+조건에 맞는 항목만 모아 새 테이블을 만들습니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">&#123;[any]: any&#125;</span></div><div class="sb-ref-param-desc">대상 테이블.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;[any]: any&#125;</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>filterFn</code><span class="sb-ref-param-type">(any, any)-&gt;boolean</span></div><div class="sb-ref-param-desc">필터 함수.</div><div class="sb-ref-param-meta"><span>Type</span> <code>(any, any)-&gt;boolean</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>&#123;[any]: any&#125;</code></div><div class="sb-ref-param-desc">필터링된 테이블.</div></div></div>
+</div>
+
+<a id="functions-map"></a>
+<div class="sb-ref-member">
+### map
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L324" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.map(
+  tbl: &#123;[any]: any&#125;,
+  mapFn: (any, any)-&gt;any
+) -&gt; &#123;any&#125;</code></pre></div>
+
+모든 값을 변환한 새 배열을 반환합니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">&#123;[any]: any&#125;</span></div><div class="sb-ref-param-desc">대상 테이블.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;[any]: any&#125;</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>mapFn</code><span class="sb-ref-param-type">(any, any)-&gt;any</span></div><div class="sb-ref-param-desc">변환 함수.</div><div class="sb-ref-param-meta"><span>Type</span> <code>(any, any)-&gt;any</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>&#123;any&#125;</code></div><div class="sb-ref-param-desc">변환된 값 배열.</div></div></div>
+</div>
+
+<a id="functions-every"></a>
+<div class="sb-ref-member">
+### every
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L340" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.every(
+  tbl: &#123;[any]: any&#125;,
+  testFn: (any, any)-&gt;boolean
+) -&gt; boolean</code></pre></div>
+
+모든 값이 조건을 통과하는지 검사합니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">&#123;[any]: any&#125;</span></div><div class="sb-ref-param-desc">점검할 테이블.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;[any]: any&#125;</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>testFn</code><span class="sb-ref-param-type">(any, any)-&gt;boolean</span></div><div class="sb-ref-param-desc">검사 함수.</div><div class="sb-ref-param-meta"><span>Type</span> <code>(any, any)-&gt;boolean</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>boolean</code></div><div class="sb-ref-param-desc">모두 통과하면 true.</div></div></div>
+</div>
+
+<a id="functions-merge"></a>
+<div class="sb-ref-member">
+### merge
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L362" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.merge(
+  ...: any
+) -&gt; &#123;[any]: any&#125;</code></pre></div>
+
+여러 테이블을 앞쪽부터 차례로 병합합니다.
+
+문자열과 숫자 키가 혼합된 테이블을 지원합니다.
+키가 숫자면 배열로 취급하여 순서대로 삽입합니다.
+키가 문자열이면 딕셔너리로 취급하여 뒤쪽 값으로 덮어씁니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>...</code><span class="sb-ref-param-type">any</span></div><div class="sb-ref-param-desc">병합할 테이블들.</div><div class="sb-ref-param-meta"><span>Type</span> <code>any</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>&#123;[any]: any&#125;</code></div><div class="sb-ref-param-desc">병합된 테이블.</div></div></div>
+</div>
+
+<a id="functions-mergearray"></a>
+<div class="sb-ref-member">
+### mergeArray
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L385" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.mergeArray(
+  ...: &#123;any&#125;
+) -&gt; &#123;any&#125;</code></pre></div>
+
+배열을 순서대로 이어 붙인 새 배열을 만듭니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>...</code><span class="sb-ref-param-type">&#123;any&#125;</span></div><div class="sb-ref-param-desc">이어 붙일 배열들.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;any&#125;</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>&#123;any&#125;</code></div><div class="sb-ref-param-desc">병합된 배열.</div></div></div>
+</div>
+
+<a id="functions-mergedict"></a>
+<div class="sb-ref-member">
+### mergeDict
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L404" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.mergeDict(
+  ...: &#123;[any]: any&#125;
+) -&gt; &#123;[any]: any&#125;</code></pre></div>
+
+사전형 테이블을 뒤쪽 값으로 덮어쓰며 병합합니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>...</code><span class="sb-ref-param-type">&#123;[any]: any&#125;</span></div><div class="sb-ref-param-desc">병합할 딕셔너리.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;[any]: any&#125;</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>&#123;[any]: any&#125;</code></div><div class="sb-ref-param-desc">병합된 딕셔너리.</div></div></div>
+</div>
+
+<a id="functions-fill"></a>
+<div class="sb-ref-member">
+### fill
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L426" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.fill(
+  tbl: &#123;any&#125;,
+  value: any,
+  start: number?,
+  End: number?
+) -&gt; &#123;any&#125;</code></pre></div>
+
+배열형 테이블의 구간을 동일한 값으로 채웁니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">&#123;any&#125;</span></div><div class="sb-ref-param-desc">대상 배열.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;any&#125;</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>value</code><span class="sb-ref-param-type">any</span></div><div class="sb-ref-param-desc">채울 값.</div><div class="sb-ref-param-meta"><span>Type</span> <code>any</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>start</code><span class="sb-ref-param-type">number?</span></div><div class="sb-ref-param-desc">시작 위치.</div><div class="sb-ref-param-meta"><span>Type</span> <code>number?</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>End</code><span class="sb-ref-param-type">number?</span></div><div class="sb-ref-param-desc">끝 위치.</div><div class="sb-ref-param-meta"><span>Type</span> <code>number?</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>&#123;any&#125;</code></div><div class="sb-ref-param-desc">수정된 배열.</div></div></div>
+</div>
+
+<a id="functions-removedupes"></a>
+<div class="sb-ref-member">
+### removeDupes
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L451" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.removeDupes(
+  tbl: &#123;any&#125;
+) -&gt; &#123;any&#125;</code></pre></div>
+
+배열에서 중복 값을 제거하고 순서를 유지합니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">&#123;any&#125;</span></div><div class="sb-ref-param-desc">대상 배열.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;any&#125;</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>&#123;any&#125;</code></div><div class="sb-ref-param-desc">중복이 제거된 배열.</div></div></div>
+</div>
+
+<a id="functions-deepfreeze"></a>
+<div class="sb-ref-member">
+### deepFreeze
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L476" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.deepFreeze(
+  tbl: &#123;[any]: any&#125;
+) -&gt; nil</code></pre></div>
+
+테이블과 모든 하위 테이블을 재귀적으로 freeze 합니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl</code><span class="sb-ref-param-type">&#123;[any]: any&#125;</span></div><div class="sb-ref-param-desc">동결할 테이블.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;[any]: any&#125;</code></div></div></div>
+</div>
+
+<a id="functions-shallowequal"></a>
+<div class="sb-ref-member">
+### shallowEqual
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L500" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.shallowEqual(
+  tbl1: &#123;[any]: any&#125;,
+  tbl2: &#123;[any]: any&#125;
+) -&gt; boolean</code></pre></div>
+
+두 테이블의 얕은 동등성을 비교합니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl1</code><span class="sb-ref-param-type">&#123;[any]: any&#125;</span></div><div class="sb-ref-param-desc">비교 대상.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;[any]: any&#125;</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>tbl2</code><span class="sb-ref-param-type">&#123;[any]: any&#125;</span></div><div class="sb-ref-param-desc">비교 대상.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;[any]: any&#125;</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>boolean</code></div><div class="sb-ref-param-desc">모든 키와 값이 같으면 true.</div></div></div>
+</div>
+
+<a id="functions-binarysearch"></a>
+<div class="sb-ref-member">
+### binarySearch
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L532" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.binarySearch(
+  array: &#123;any&#125;,
+  target: any,
+  comparator: ((any, any)-&gt;boolean)?
+) -&gt; number?</code></pre></div>
+
+정렬된 배열에서 대상 값을 이진 탐색합니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>array</code><span class="sb-ref-param-type">&#123;any&#125;</span></div><div class="sb-ref-param-desc">정렬된 배열.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;any&#125;</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>target</code><span class="sb-ref-param-type">any</span></div><div class="sb-ref-param-desc">찾을 값.</div><div class="sb-ref-param-meta"><span>Type</span> <code>any</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>comparator</code><span class="sb-ref-param-type">((any, any)-&gt;boolean)?</span></div><div class="sb-ref-param-desc">정렬 비교 함수.</div><div class="sb-ref-param-meta"><span>Type</span> <code>((any, any)-&gt;boolean)?</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>number?</code></div><div class="sb-ref-param-desc">찾은 위치 인덱스.</div></div></div>
+</div>
+
+<a id="functions-bisectleft"></a>
+<div class="sb-ref-member">
+### bisectLeft
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L558" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.bisectLeft(
+  array: &#123;any&#125;,
+  target: any,
+  comparator: ((any, any)-&gt;boolean)?
+) -&gt; number</code></pre></div>
+
+정렬된 배열에서 대상이 들어갈 가장 왼쪽 위치를 반환합니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>array</code><span class="sb-ref-param-type">&#123;any&#125;</span></div><div class="sb-ref-param-desc">정렬된 배열.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;any&#125;</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>target</code><span class="sb-ref-param-type">any</span></div><div class="sb-ref-param-desc">삽입 값.</div><div class="sb-ref-param-meta"><span>Type</span> <code>any</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>comparator</code><span class="sb-ref-param-type">((any, any)-&gt;boolean)?</span></div><div class="sb-ref-param-desc">정렬 비교 함수.</div><div class="sb-ref-param-meta"><span>Type</span> <code>((any, any)-&gt;boolean)?</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>number</code></div><div class="sb-ref-param-desc">삽입 지점 인덱스.</div></div></div>
+</div>
+
+<a id="functions-bisectright"></a>
+<div class="sb-ref-member">
+### bisectRight
+
+<div class="sb-ref-item-meta"><span class="sb-ref-badge sb-ref-badge--function">Function</span><a class="sb-ref-source" href="https://github.com/storybakery/docs-template/blob/main/TableUtil.luau#L582" target="_blank" rel="noreferrer">View Source</a></div>
+
+<div class="sb-ref-signature-block"><pre><code>TableUtil.bisectRight(
+  array: &#123;any&#125;,
+  target: any,
+  comparator: ((any, any)-&gt;boolean)?
+) -&gt; number</code></pre></div>
+
+정렬된 배열에서 대상이 들어갈 가장 오른쪽 위치를 반환합니다.
+
+<div class="sb-ref-subhead">Parameters</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>array</code><span class="sb-ref-param-type">&#123;any&#125;</span></div><div class="sb-ref-param-desc">정렬된 배열.</div><div class="sb-ref-param-meta"><span>Type</span> <code>&#123;any&#125;</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>target</code><span class="sb-ref-param-type">any</span></div><div class="sb-ref-param-desc">삽입 값.</div><div class="sb-ref-param-meta"><span>Type</span> <code>any</code></div></div><div class="sb-ref-param-card"><div class="sb-ref-param-name"><code>comparator</code><span class="sb-ref-param-type">((any, any)-&gt;boolean)?</span></div><div class="sb-ref-param-desc">정렬 비교 함수.</div><div class="sb-ref-param-meta"><span>Type</span> <code>((any, any)-&gt;boolean)?</code></div></div></div>
+
+<div class="sb-ref-subhead">Returns</div>
+
+<div class="sb-ref-param-list"><div class="sb-ref-param-card sb-ref-return-card"><div class="sb-ref-param-name"><code>number</code></div><div class="sb-ref-param-desc">삽입 지점 인덱스.</div></div></div>
+</div>

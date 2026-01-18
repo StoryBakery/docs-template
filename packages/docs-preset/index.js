@@ -105,29 +105,7 @@ module.exports = function storybakeryDocsPreset(context, opts = {}) {
     ["@storybakery/docs-theme", opts.storyTheme || {}],
   ];
 
-  const moonwaveDisabled = opts.moonwave === false;
   const plugins = [];
-
-  if (!moonwaveDisabled) {
-    const moonwaveOptions = {
-      enabled: true,
-      jsonPath: ".generated/moonwave/docs.json",
-      outputDir: "docs/reference",
-      clean: true,
-      docsPath: docsOptions.path,
-      ...(opts.moonwave || {}),
-    };
-    if (Object.prototype.hasOwnProperty.call(opts, "i18nReference")) {
-      moonwaveOptions.i18nReference = opts.i18nReference;
-    }
-
-    if (moonwaveOptions.enabled !== false) {
-      plugins.push([
-        path.resolve(__dirname, "plugins/moonwave-bridge"),
-        moonwaveOptions,
-      ]);
-    }
-  }
 
   plugins.push(["@docusaurus/plugin-content-docs", docsOptions]);
   plugins.push(["@docusaurus/plugin-content-pages", pagesOptions]);

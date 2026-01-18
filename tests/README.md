@@ -7,4 +7,4 @@
 - 테스트 실행: `tests/luau-module-project/website`에서 `npm run test`
 - 로컬 개발: `tests/luau-module-project/website`에서 `npm run dev`
 - GitHub release published 시 CI가 테스트를 실행한다.
-- 테스트는 `moonwave-extractor`가 설치되어 있어야 통과한다.
+- reference 문서는 `tests/luau-module-project/website/docs/reference/`에 포함된다.

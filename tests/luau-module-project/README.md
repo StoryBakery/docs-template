@@ -11,5 +11,4 @@
 - `tests/luau-module-project/website`에서 `npm run test`
 
 요구사항:
-- `moonwave-extractor`가 PATH에 있어야 한다.
-- 필요하면 `MOONWAVE_EXTRACTOR_CMD`로 실행 커맨드를 지정한다.
+- 별도의 추출기 설치 없이 실행된다.

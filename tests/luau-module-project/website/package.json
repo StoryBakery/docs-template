@@ -4,13 +4,11 @@
   "private": true,
   "scripts": {
     "verify:reference": "node scripts/verify-reference.js",
-    "build": "npm run moonwave:extract && docusaurus build",
-    "start": "npm run moonwave:extract && docusaurus start",
+    "build": "docusaurus build",
+    "start": "docusaurus start",
     "serve": "docusaurus serve",
     "test": "npm run build && npm run verify:reference",
-    "moonwave:extract": "node scripts/moonwave-extract.js",
-    "moonwave:watch": "node scripts/moonwave-watch.js",
-    "dev": "concurrently -k -n moonwave,docs \"npm run moonwave:watch\" \"docusaurus start\""
+    "dev": "docusaurus start"
   },
   "dependencies": {
     "@docusaurus/core": "^3.0.0",
@@ -19,12 +17,7 @@
     "@docusaurus/theme-classic": "^3.0.0",
     "@storybakery/docs-preset": "file:../../../packages/docs-preset",
     "@storybakery/docs-theme": "file:../../../packages/docs-theme",
-    "adm-zip": "^0.5.12",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
-  },
-  "devDependencies": {
-    "chokidar": "^3.6.0",
-    "concurrently": "^8.2.2"
   }
 }
