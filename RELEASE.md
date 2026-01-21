@@ -1,6 +1,6 @@
 # 패키지 릴리즈 가이드
 
-이 저장소는 `@storybakery/docs-theme`, `@storybakery/docs-preset`, `@storybakery/create-docs` 패키지를 배포합니다.
+이 저장소는 `@storybakery/docs-theme`, `@storybakery/docs-preset`, `@storybakery/create-docs`, `@storybakery/luau-docgen` 패키지를 배포합니다.
 릴리즈 전에는 반드시 테스트를 통과시켜야 합니다.
 
 ## 테스트
@@ -16,6 +16,7 @@ npm run test
 - `packages/docs-theme/package.json`
 - `packages/docs-preset/package.json`
 - `packages/create-docs/package.json`
+- `packages/luau-docgen/package.json`
 
 ## 배포
 
@@ -29,6 +30,9 @@ cd ../docs-preset
 npm publish --access public
 
 cd ../create-docs
+npm publish --access public
+
+cd ../luau-docgen
 npm publish --access public
 ```
 

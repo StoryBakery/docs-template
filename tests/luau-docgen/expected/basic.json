@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "generatorVersion": "0.1.0",
+  "luauVersion": null,
+  "modules": [
+    {
+      "id": "Sample",
+      "path": "tests/luau-docgen/fixtures/basic/src/Sample.luau",
+      "sourceHash": "6fc3693256ec972e1cebfb976cad33883189003e",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Sample",
+          "qualifiedName": "Sample",
+          "location": {
+            "file": "tests/luau-docgen/fixtures/basic/src/Sample.luau",
+            "line": 1,
+            "column": 1
+          },
+          "docs": {
+            "summary": "Sample module for luau-docgen tests.",
+            "descriptionMarkdown": "Sample module for luau-docgen tests.",
+            "tags": [],
+            "examples": []
+          },
+          "types": {
+            "display": "",
+            "structured": {
+              "indexName": null
+            }
+          },
+          "visibility": "public"
+        },
+        {
+          "kind": "function",
+          "name": "new",
+          "qualifiedName": "Sample.new",
+          "location": {
+            "file": "tests/luau-docgen/fixtures/basic/src/Sample.luau",
+            "line": 17,
+            "column": 1
+          },
+          "docs": {
+            "summary": "Creates a new Sample.",
+            "descriptionMarkdown": "Creates a new Sample.",
+            "tags": [],
+            "examples": []
+          },
+          "types": {
+            "display": "(name: string, enabled: boolean) -> Sample",
+            "structured": {
+              "params": [
+                {
+                  "name": "name",
+                  "type": "string",
+                  "description": "Identifier."
+                },
+                {
+                  "name": "enabled",
+                  "type": "boolean",
+                  "description": "Whether the instance is enabled.\nAdditional details for the enabled flag."
+                }
+              ],
+              "returns": [
+                {
+                  "type": "Sample",
+                  "description": "New instance."
+                }
+              ],
+              "errors": [],
+              "yields": false
+            }
+          },
+          "visibility": "public"
+        },
+        {
+          "kind": "property",
+          "name": "Enabled",
+          "qualifiedName": "Sample.Enabled",
+          "location": {
+            "file": "tests/luau-docgen/fixtures/basic/src/Sample.luau",
+            "line": 21,
+            "column": 1
+          },
+          "docs": {
+            "summary": "Whether the instance is enabled.",
+            "descriptionMarkdown": "Whether the instance is enabled.",
+            "tags": [],
+            "examples": []
+          },
+          "types": {
+            "display": "boolean",
+            "structured": {
+              "type": "boolean",
+              "readonly": true
+            }
+          },
+          "visibility": "public"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "@storybakery/luau-docgen",
+  "version": "0.1.0",
+  "description": "StoryBakery Luau doc generator",
+  "main": "src/index.js",
+  "bin": {
+    "luau-docgen": "bin/luau-docgen.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "native"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

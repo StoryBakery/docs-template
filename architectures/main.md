@@ -37,6 +37,7 @@ Luau 프로젝트는 luau-docgen 기반 추출기로 JSON을 생성해 reference
   - i18n 정책을 강제하는 옵션을 제공한다.
 - `@storybakery/docs-theme`: 공통 디자인 토큰, 컴포넌트, 애니메이션
 - `@storybakery/create-docs`: `website/` 템플릿과 의존성을 설치하는 CLI
+- `@storybakery/bakerywave`: 단일 CLI `bakerywave` 제공
 - `@storybakery/luau-docgen`: Luau 공식 분석기 기반 추출기
 - `@storybakery/docusaurus-plugin-reference`: Luau JSON → MDX 변환/로드
 - JSON 스키마 v1: 추출기와 렌더러 간 계약
@@ -73,6 +74,21 @@ npm create @storybakery/docs
 ```
 npm create @storybakery/docs -- docs-site
 ```
+
+## 단일 CLI (bakerywave)
+- `bakerywave`를 공식 CLI 이름으로 사용한다.
+- npm 패키지는 `@storybakery/bakerywave`이며, 실행 파일 이름은 `bakerywave`다.
+- `bakerywave init`은 `npm create @storybakery/docs`와 동일한 스캐폴딩을 수행한다.
+- `bakerywave dev`/`bakerywave start`는 Docusaurus 개발 서버를 실행한다.
+- `bakerywave build`는 정적 빌드를 수행한다.
+- `bakerywave reference build --lang <lang>`는 reference JSON 생성과 (옵션) MDX 생성을 수행한다.
+- `bakerywave reference watch`는 증분 빌드/캐시를 사용하는 watch 모드다.
+- `bakerywave doctor`는 링크/태그/진단 결과를 점검한다.
+
+## 릴리즈/배포 (채널)
+- npm 배포: `@storybakery/create-docs`, `@storybakery/bakerywave`, preset/theme/plugin/docgen 패키지를 배포한다.
+- rokit 배포: `bakerywave` 바이너리를 배포해 rokit로 설치할 수 있게 한다.
+- `bakerywave dev/start/build`는 Node 환경을 사용한다.
 
 ## 공통 프리셋 패키지 사용 (기본)
 공통 프리셋은 표준 플러그인/테마 구성을 포함한다.
@@ -154,8 +170,10 @@ export default {
 ## Reference 문서 운영 (표준)
 - reference 문서는 언어별 추출기가 생성한 JSON을 기준으로 만든다. Luau는 luau-docgen을 기본 제공한다.
 - 표준 산출물 경로는 `website/.generated/reference/<lang>.json`이며, Luau는 `website/.generated/reference/luau.json`을 사용한다.
-- 렌더링은 JSON → MDX 생성 또는 JSON 직접 로드 중 하나를 사용한다.
-- Docusaurus는 `docs/reference/`(언어별 하위 디렉터리 포함)의 문서를 reference 섹션으로 제공한다.
+- 기본 렌더링은 JSON 직접 로드 방식으로 한다.
+- 옵션으로 JSON 직접 로드를 끄고 JSON → MDX 생성 방식으로 전환한다.
+- JSON 직접 로드 모드에서는 reference 플러그인이 JSON을 읽어 reference 섹션을 구성한다.
+- MDX 생성 모드에서는 Docusaurus가 `docs/reference/`(언어별 하위 디렉터리 포함)의 문서를 reference 섹션으로 제공한다.
 - 산출물은 `website/.generated/`에 보관하고 Git 추적하지 않는다.
 
 ## Reference 산출물 소유권/정리 규칙
@@ -170,7 +188,8 @@ export default {
 ### 링크(Short link) 해석
 - Moonwave 호환 short link 규칙(`[ClassName]`, `[ClassName:method]`, `[ClassName.member]`)은 그대로 지원한다.
 - 동일 표기에서 후보가 여러 개로 매칭될 수 있으므로, 해석은 결정적(deterministic)이어야 한다.
-- 우선순위(권장): 1) 같은 모듈(또는 같은 파일/페이지 스코프) 2) 같은 레포 3) 다중 후보 시 안정적 타이브레이커(예: `moduleId`, `qualifiedName` 정렬 순).
+- 우선순위(권장): 1) 같은 모듈(또는 같은 파일/페이지 스코프) 2) 같은 레포 3) 다중 후보 시 안정적 타이브레이커로 1개를 선택한다.
+- 타이브레이커 키: `moduleId` ASC -> `qualifiedName` ASC -> `kind` ASC -> `location(file,line,col)` ASC
 - 다중 후보/미해결 링크는 진단 항목으로 수집한다.
 
 ### 슬러그/문서 ID 안정성
@@ -186,7 +205,7 @@ export default {
 ```
 프로젝트 문서 소스
   - 언어별 docgen(JSON) -> website/.generated/reference/<lang>.json (Luau는 luau-docgen)
-  - JSON -> MDX 생성(선택) -> website/docs/reference/<lang>
+  - JSON -> reference 플러그인 직접 로드(기본) / MDX 생성(옵션) -> website/docs/reference/<lang>
   - 수동 문서 -> website/docs
   - 커스텀 페이지 -> website/src/pages
             |
@@ -208,7 +227,10 @@ export default {
 - 그 외 라인은 description으로 처리하고 Markdown을 허용한다.
 
 ### Doc comment 타입 태그
-- 각 doc comment는 아래 타입 태그 중 정확히 하나를 포함해야 한다.
+- doc comment 타입은 기본적으로 AST 바인딩 결과로 결정한다.
+- 타입 태그는 코드에 없는 가상 멤버/override 문서화에 사용한다.
+- strict 모드에서는 타입 태그를 더 엄격히 요구할 수 있다.
+- 타입 태그는 아래 중 하나를 사용한다.
   - `@class <name>`
   - `@prop <name> <type>`
   - `@type <name> <type>`
@@ -246,11 +268,14 @@ export default {
 - 추론이 모호하면 `@within`을 요구하고 진단을 남긴다.
 - `@prop/@method/@function`은 코드에 선언이 없는 가상 멤버 문서화에만 사용한다.
 - `@param/@return/@error`는 들여쓰기 continuation을 허용해 멀티라인 설명을 지원한다.
+  - 다음 줄이 2칸 이상 들여쓰기이며 첫 문자가 `@` 또는 `.`가 아니면 continuation으로 누적한다.
+  - 다음 태그 라인/field 라인/들여쓰기 없는 description 라인이 나오면 종료한다.
+  - 들여쓴 빈 줄은 문단 구분으로 보존한다.
+  - fenced code block 내부에서는 `@`를 태그로 해석하지 않는다.
 - 반복/공통 문구를 줄이기 위해 다음 확장 태그를 지원할 수 있다.
   - `@inheritDoc <QualifiedName>`: 대상 문서를 상속/병합한다.
   - `@include <fragmentId>` 또는 `@snippet <path> [region]`: 문서/코드 조각을 삽입한다.
   - `@alias <name>`: 링크/검색 별칭을 추가한다.
-- short link는 disambiguation 접두어를 지원할 수 있다. 예: `class@Foo`, `type@Foo`, `method@Foo:bar`
 
 ## luau-docgen 상세
 ### 입력 스캔/모듈 그래프
@@ -262,6 +287,10 @@ export default {
 - `.luaurc` 병합 규칙을 그대로 적용한다.
 - 파일 상단의 `--!strict|nonstrict|nocheck` 모드를 반영한다.
 - 결과로 모듈 공개 심볼, 함수/테이블 멤버 타입, 타입 별칭을 수집한다.
+
+### Luau 파서 고정
+- luau-docgen은 `packages/luau-docgen/native/luau.version`에 고정된 Luau 소스를 내장 빌드한다.
+- 외부 설치에 의존하지 않으며, 빌드 시 `LUAU_DOCGEN_LUAU_DIR`로 로컬 Luau 경로를 지정할 수 있다.
 
 ### Doc comment 파싱(표준 스펙)
 - 주석 블록: `---` 연속 라인, `--[=[ ... ]=]` 블록 주석
@@ -305,6 +334,7 @@ export default {
 - 출력은 JSON 스키마 v1로 매핑하거나 MDX 생성 파이프라인으로 합류한다.
 - 언어별 reference는 `<lang>` 식별자로 경로를 분리해 병렬 운영할 수 있다.
 - 프로젝트는 언어별 추출기/어댑터 추가를 전제로 구성한다.
+- 비-Luau 어댑터는 표준 산출물을 입력으로 받아 JSON v1 또는 MDX로 변환하고, links/diagnostics를 동일 정책으로 생성한다.
 - Luau는 Moonwave 호환 규칙을 기본 제공한다.
 - 비-Luau는 Moonwave 태그를 강제하지 않는다.
 - 대표 입력 예시:
@@ -399,4 +429,5 @@ npm update @storybakery/docs-preset
 - `website/build/`
 - `website/.docusaurus/`
 - `website/.generated/`
+- `website/docs/reference/`
 - `website/node_modules/`

@@ -4,6 +4,7 @@
 
 - 실제 문서 사이트: `website/`
 - 테스트 프로젝트: `tests/luau-module-project/` (임시, 배포 대상 아님)
+- luau-docgen 테스트: `tests/luau-docgen/` (입력/출력 분리)
 - 테스트 실행: `tests/luau-module-project/website`에서 `npm run test`
 - 로컬 개발: `tests/luau-module-project/website`에서 `npm run dev`
 - GitHub release published 시 CI가 테스트를 실행한다.
