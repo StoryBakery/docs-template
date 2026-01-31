@@ -24,19 +24,25 @@ function resolveNpmExec() {
     }
 
     const npmExecPath = process.env.npm_execpath;
-    if (npmExecPath && fs.existsSync(npmExecPath)) {
-        NPM_EXEC_CACHE.value = { command: process.execPath, args: [npmExecPath] };
-        return NPM_EXEC_CACHE.value;
-    }
-
-    if (process.platform === "win32") {
-        NPM_EXEC_CACHE.value = { command: "npm.cmd", args: [] };
-        return NPM_EXEC_CACHE.value;
-    }
-
-    NPM_EXEC_CACHE.value = { command: "npm", args: [] };
+    NPM_EXEC_CACHE.value = resolveNpmCommand();
     return NPM_EXEC_CACHE.value;
 }
+
+
+function resolveNpmCommand() {
+    const npmExecPath = process.env.npm_execpath;
+    if (npmExecPath && fs.existsSync(npmExecPath)) {
+        return { command: process.execPath, args: [npmExecPath] };
+    }
+    if (process.platform === "win32") {
+        return { command: "npm.cmd", args: [] };
+    }
+    return { command: "npm", args: [] };
+}
+function sanitizeArgs(args) {
+    return args.filter((item) => typeof item === "string" && item.length > 0);
+}
+
 
 
 function splitArgs(argv) {
@@ -101,6 +107,30 @@ function parseGlobalArgs(argv) {
     };
 }
 
+function parseDevArgs(argv) {
+    const args = [];
+    let restart = true;
+
+    for (let i = 0; i < argv.length; i += 1) {
+        const arg = argv[i];
+        if (arg === "--no-restart") {
+            restart = false;
+            continue;
+        }
+        if (arg === "--restart") {
+            restart = true;
+            continue;
+        }
+        args.push(arg);
+    }
+
+    return {
+        args,
+        restart,
+    };
+}
+
+
 function resolveSiteDir(baseCwd, siteDir) {
     return path.resolve(baseCwd, siteDir || ".");
 }
@@ -110,7 +140,7 @@ function resolveCommand(command) {
 }
 
 function runCommand(command, args, options) {
-    const result = spawnSync(command, args, {
+    const result = spawnSync(command, sanitizeArgs(args), {
         stdio: "inherit",
         cwd: options.cwd,
         env: options.env || process.env,
@@ -126,10 +156,27 @@ function runDocusaurus(command, args, siteDirAbs) {
         console.error(`[bakerywave] site directory not found: ${siteDirAbs}`);
         process.exit(1);
     }
-    const npmExec = resolveNpmExec();
-    runCommand(npmExec.command, [...npmExec.args, "exec", "docusaurus", "--", command, ...args], {
-        cwd: siteDirAbs,
-    });
+    let npmExec = resolveNpmExec();
+    const cmdArgs = sanitizeArgs([...npmExec.args, "exec", "docusaurus", "--", command, ...args]);
+    try {
+        const versionCheck = spawnSync(npmExec.command, ["--version"], { stdio: "ignore" });
+        if (versionCheck.error || versionCheck.status !== 0) {
+            npmExec = resolveNpmCommand();
+        }
+    } catch (error) {
+        npmExec = resolveNpmCommand();
+    }
+    try {
+        runCommand(npmExec.command, cmdArgs, {
+            cwd: siteDirAbs,
+        });
+        return;
+    } catch (error) {
+        const docusaurusBin = require.resolve("@docusaurus/core/bin/docusaurus.mjs", { paths: [siteDirAbs, __dirname] });
+        runCommand(process.execPath, [docusaurusBin, command, ...args], {
+            cwd: siteDirAbs,
+        });
+    }
 }
 
 function spawnDocusaurus(command, args, siteDirAbs) {
@@ -137,12 +184,30 @@ function spawnDocusaurus(command, args, siteDirAbs) {
         console.error(`[bakerywave] site directory not found: ${siteDirAbs}`);
         process.exit(1);
     }
-    const npmExec = resolveNpmExec();
-    return spawn(npmExec.command, [...npmExec.args, "exec", "docusaurus", "--", command, ...args], {
-        stdio: "inherit",
-        cwd: siteDirAbs,
-        env: process.env,
-    });
+    let npmExec = resolveNpmExec();
+    const cmdArgs = sanitizeArgs([...npmExec.args, "exec", "docusaurus", "--", command, ...args]);
+    try {
+        const versionCheck = spawnSync(npmExec.command, ["--version"], { stdio: "ignore" });
+        if (versionCheck.error || versionCheck.status !== 0) {
+            npmExec = resolveNpmCommand();
+        }
+    } catch (error) {
+        npmExec = resolveNpmCommand();
+    }
+    try {
+        return spawn(npmExec.command, cmdArgs, {
+            stdio: "inherit",
+            cwd: siteDirAbs,
+            env: process.env,
+        });
+    } catch (error) {
+        const docusaurusBin = require.resolve("@docusaurus/core/bin/docusaurus.mjs", { paths: [siteDirAbs, __dirname] });
+        return spawn(process.execPath, [docusaurusBin, command, ...args], {
+            stdio: "inherit",
+            cwd: siteDirAbs,
+            env: process.env,
+        });
+    }
 }
 
 
@@ -217,6 +282,49 @@ function loadBakerywaveReferenceOptions(baseCwd, siteDirAbs) {
     }
 }
 
+
+function loadBakerywaveI18nOptions(baseCwd, siteDirAbs) {
+    const tomlPath = findBakerywaveTomlPath(baseCwd, siteDirAbs);
+    if (!tomlPath) {
+        return {};
+    }
+
+    try {
+        const raw = fs.readFileSync(tomlPath, "utf8");
+        const parsed = toml.parse(raw);
+        const i18n = parsed.i18n && typeof parsed.i18n === "object" ? parsed.i18n : {};
+        return { ...i18n };
+    } catch (error) {
+        console.error(`[bakerywave] failed to load bakerywave.toml: ${tomlPath}`);
+        console.error(error.message);
+        return {};
+    }
+}
+
+function loadI18nOptions(baseCwd, siteDirAbs, configPath) {
+    const configFile = configPath
+        ? path.resolve(baseCwd, configPath)
+        : path.join(siteDirAbs, "docusaurus.config.js");
+    const bakerywaveOptions = loadBakerywaveI18nOptions(baseCwd, siteDirAbs);
+
+    if (!fs.existsSync(configFile)) {
+        return { ...bakerywaveOptions };
+    }
+
+    try {
+        delete require.cache[require.resolve(configFile)];
+        const siteConfig = require(configFile);
+        const i18n = siteConfig && siteConfig.i18n && typeof siteConfig.i18n === "object" ? siteConfig.i18n : {};
+        return {
+            ...i18n,
+            ...bakerywaveOptions,
+        };
+    } catch (error) {
+        console.error(`[bakerywave] failed to load config: ${configFile}`);
+        console.error(error.message);
+        return { ...bakerywaveOptions };
+    }
+}
 function loadReferenceOptions(baseCwd, siteDirAbs, configPath) {
     const configFile = configPath
         ? path.resolve(baseCwd, configPath)
@@ -367,6 +475,21 @@ function parseReferenceArgs(args) {
     return { options, rest };
 }
 
+
+function resolveReferenceLanguageOptions(referenceOptions, overrides) {
+    const options = { ...referenceOptions };
+    const languages = options.languages && typeof options.languages === "object" ? options.languages : null;
+    const selectedLang = (overrides && overrides.lang) || options.lang || null;
+    const defaultLang = selectedLang || (languages ? Object.keys(languages)[0] : null) || "luau";
+    options.lang = defaultLang;
+
+    if (languages && languages[defaultLang] && typeof languages[defaultLang] === "object") {
+        const langOptions = languages[defaultLang];
+        return { ...options, ...langOptions, lang: defaultLang };
+    }
+
+    return options;
+}
 function resolveReferenceOptions(baseOptions, overrides) {
     const merged = { ...baseOptions };
     const keys = [
@@ -388,7 +511,8 @@ function resolveReferenceOptions(baseOptions, overrides) {
         }
         merged[key] = value;
     }
-    return merged;
+
+    return resolveReferenceLanguageOptions(merged, overrides);
 }
 
 function resolveReferenceDefaults(baseCwd, siteDirAbs, referenceOptions) {
@@ -494,7 +618,7 @@ function runLuauDocgen(docgenScript, defaults, docgenFlags) {
     }
 }
 
-function runReferenceBuild(docgenScript, generator, baseCwd, siteDirAbs, referenceOptions, docgenFlags) {
+function runReferenceBuild(docgenScript, generator, baseCwd, siteDirAbs, referenceOptions, docgenFlags, configPath) {
     const defaults = resolveReferenceDefaults(baseCwd, siteDirAbs, referenceOptions);
     runLuauDocgen(docgenScript, defaults, docgenFlags);
 
@@ -510,9 +634,68 @@ function runReferenceBuild(docgenScript, generator, baseCwd, siteDirAbs, referen
         process.exit(1);
     }
 
+    const i18nOptions = loadI18nOptions(baseCwd, siteDirAbs, configPath);
+    if (generatorOptions.renderMode !== "json") {
+        syncReferenceI18n(siteDirAbs, result.outDir, defaults.lang, i18nOptions);
+    }
+
     console.log(`[bakerywave] reference generated: ${result.outDir}`);
 }
 
+
+function resolveI18nDefaults(i18nOptions) {
+    const locales = Array.isArray(i18nOptions.locales) ? i18nOptions.locales : [];
+    const defaultLocale = i18nOptions.defaultLocale || locales[0] || null;
+    let referenceLocales = Array.isArray(i18nOptions.referenceLocales) ? i18nOptions.referenceLocales : [];
+    if (referenceLocales.length === 0 && defaultLocale) {
+        referenceLocales = locales.filter((locale) => locale !== defaultLocale);
+    }
+    const referenceCopy = !i18nOptions.reference || i18nOptions.reference.copy !== false;
+    return {
+        locales,
+        defaultLocale,
+        referenceLocales,
+        referenceCopy,
+    };
+}
+
+function copyDirSync(source, target) {
+    if (!fs.existsSync(source)) {
+        return;
+    }
+    fs.mkdirSync(target, { recursive: true });
+    const entries = fs.readdirSync(source, { withFileTypes: true });
+    for (const entry of entries) {
+        const srcPath = path.join(source, entry.name);
+        const dstPath = path.join(target, entry.name);
+        if (entry.isDirectory()) {
+            copyDirSync(srcPath, dstPath);
+            continue;
+        }
+        fs.copyFileSync(srcPath, dstPath);
+    }
+}
+
+function syncReferenceI18n(siteDirAbs, outDir, lang, i18nOptions) {
+    const defaults = resolveI18nDefaults(i18nOptions);
+    if (!defaults.defaultLocale || defaults.referenceLocales.length === 0 || !defaults.referenceCopy) {
+        return;
+    }
+
+    const docsRoot = path.join(siteDirAbs, "i18n");
+    for (const locale of defaults.referenceLocales) {
+        const target = path.join(
+            docsRoot,
+            locale,
+            "docusaurus-plugin-content-docs",
+            "current",
+            "reference",
+            lang
+        );
+        fs.rmSync(target, { recursive: true, force: true });
+        copyDirSync(outDir, target);
+    }
+}
 function createWatchers(targets, onChange) {
     const watchers = [];
     for (const target of targets) {
@@ -531,7 +714,7 @@ function createWatchers(targets, onChange) {
     return watchers;
 }
 
-function runReferenceWatch(docgenScript, generator, baseCwd, siteDirAbs, referenceOptions, docgenFlags) {
+function runReferenceWatch(docgenScript, generator, baseCwd, siteDirAbs, referenceOptions, docgenFlags, configPath) {
     const defaults = resolveReferenceDefaults(baseCwd, siteDirAbs, referenceOptions);
     const watchTargets = [path.join(defaults.rootDir, defaults.srcDir)];
     if (defaults.typesDir) {
@@ -549,7 +732,7 @@ function runReferenceWatch(docgenScript, generator, baseCwd, siteDirAbs, referen
         running = true;
         pending = false;
         try {
-            runReferenceBuild(docgenScript, generator, baseCwd, siteDirAbs, referenceOptions, docgenFlags);
+            runReferenceBuild(docgenScript, generator, baseCwd, siteDirAbs, referenceOptions, docgenFlags, configPath);
         } finally {
             running = false;
             if (pending) {
@@ -580,7 +763,55 @@ function buildReferenceWatchArgs(siteDirAbs, configPath) {
     return args;
 }
 
-function runDev(baseCwd, siteDirAbs, configPath, docusaurusArgs) {
+function buildRestartTargets(baseCwd, siteDirAbs, configPath) {
+    const targets = [];
+    const projectRoot = resolveProjectRoot(baseCwd, siteDirAbs);
+
+    const packageDirs = [
+        path.join(projectRoot, "packages", "docs-preset"),
+        path.join(projectRoot, "packages", "docs-theme"),
+        path.join(projectRoot, "packages", "docusaurus-plugin-reference"),
+        path.join(projectRoot, "packages", "bakerywave"),
+        path.join(projectRoot, "packages", "luau-docgen"),
+    ];
+
+    for (const dir of packageDirs) {
+        if (fs.existsSync(dir)) {
+            targets.push(dir);
+        }
+    }
+
+    const configCandidates = configPath
+        ? [path.resolve(baseCwd, configPath)]
+        : [
+            path.join(siteDirAbs, "docusaurus.config.js"),
+            path.join(siteDirAbs, "docusaurus.config.cjs"),
+            path.join(siteDirAbs, "docusaurus.config.mjs"),
+            path.join(siteDirAbs, "docusaurus.config.ts"),
+        ];
+
+    for (const candidate of configCandidates) {
+        if (fs.existsSync(candidate)) {
+            targets.push(candidate);
+        }
+    }
+
+    const tomlCandidates = [
+        path.join(siteDirAbs, "bakerywave.toml"),
+        path.join(projectRoot, "bakerywave.toml"),
+    ];
+
+    for (const candidate of tomlCandidates) {
+        if (fs.existsSync(candidate)) {
+            targets.push(candidate);
+        }
+    }
+
+    return targets;
+}
+
+
+function runDev(baseCwd, siteDirAbs, configPath, docusaurusArgs, devOptions) {
     const watchArgs = buildReferenceWatchArgs(siteDirAbs, configPath);
     const watchProcess = spawn(process.execPath, [__filename, ...watchArgs], {
         stdio: "inherit",
@@ -588,15 +819,52 @@ function runDev(baseCwd, siteDirAbs, configPath, docusaurusArgs) {
         env: process.env,
     });
 
-    const startProcess = spawnDocusaurus("start", docusaurusArgs, siteDirAbs);
+    const restartEnabled = !(devOptions && devOptions.restart === false);
+    const restartTargets = restartEnabled ? buildRestartTargets(baseCwd, siteDirAbs, configPath) : [];
+    let startProcess = spawnDocusaurus("start", docusaurusArgs, siteDirAbs);
     const children = [watchProcess, startProcess];
+    const restartWatchers = restartTargets.length > 0 ? createWatchers(restartTargets, () => scheduleRestart()) : [];
     let exiting = false;
+    let restartTimer = null;
+
+    const scheduleRestart = () => {
+        if (!restartEnabled || exiting) {
+            return;
+        }
+        if (restartTimer) {
+            return;
+        }
+        restartTimer = setTimeout(() => {
+            restartTimer = null;
+            if (exiting) {
+                return;
+            }
+            if (startProcess && startProcess.pid && startProcess.exitCode === null) {
+                startProcess.kill();
+            }
+            startProcess = spawnDocusaurus("start", docusaurusArgs, siteDirAbs);
+            children[1] = startProcess;
+            startProcess.on("exit", (code) => {
+                if (exiting) {
+                    return;
+                }
+                shutdown(code === null ? 1 : code);
+            });
+        }, 150);
+    };
 
     const shutdown = (exitCode) => {
         if (exiting) {
             return;
         }
         exiting = true;
+        for (const watcher of restartWatchers) {
+            try {
+                watcher.close();
+            } catch (error) {
+                // ignore
+            }
+        }
         for (const child of children) {
             if (child && child.pid && child.exitCode === null) {
                 child.kill();
@@ -625,7 +893,7 @@ function printHelp() {
     console.log("  bakerywave <command> [siteDir] [-- ...args]");
     console.log("\nCommands:");
     console.log("  start               Start Docusaurus dev server");
-    console.log("  dev                 Start dev server with reference watch");
+    console.log("  dev                 Start dev server with reference watch (auto restart)");
     console.log("  build                Build the site");
     console.log("  serve|preview        Serve the built site");
     console.log("  clear                Clear Docusaurus cache");
@@ -637,7 +905,7 @@ function printHelp() {
     console.log("\nGlobal Options:");
     console.log("  --cwd <dir>          Base working directory");
     console.log("  --site-dir <dir>     Site directory (default: website or cwd)");
-    console.log("  --config <path>      Docusaurus config path");
+    console.log("  --config <path>      Docusaurus config path\n  --no-restart         Disable auto restart for dev");
 }
 
 function main() {
@@ -667,7 +935,8 @@ function main() {
     const siteDirAbs = resolveSiteDir(cwd, siteDirOverride || siteDir);
 
     if (command === "dev") {
-        runDev(cwd, siteDirAbs, configPath, [...commandArgs, ...tail]);
+        const { args: devArgs, restart } = parseDevArgs([...commandArgs, ...tail]);
+        runDev(cwd, siteDirAbs, configPath, devArgs, { restart });
         return;
     }
 
@@ -713,11 +982,11 @@ function main() {
         };
 
         if (subcommand === "build") {
-            runReferenceBuild(docgenScript, generator, cwd, siteDirAbs, referenceOptions, docgenFlags);
+            runReferenceBuild(docgenScript, generator, cwd, siteDirAbs, referenceOptions, docgenFlags, configPath);
             return;
         }
 
-        runReferenceWatch(docgenScript, generator, cwd, siteDirAbs, referenceOptions, docgenFlags);
+        runReferenceWatch(docgenScript, generator, cwd, siteDirAbs, referenceOptions, docgenFlags, configPath);
         return;
     }
 

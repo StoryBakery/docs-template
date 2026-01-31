@@ -309,6 +309,8 @@ function Promise._new(traceback, callback, parent)
 end
 
 --[=[
+	@constructor
+	
 	Construct a new Promise that will be resolved or rejected with the given callbacks.
 
 	If you `resolve` with a Promise, it will be chained onto.
@@ -1031,7 +1033,7 @@ end
 	:::
 
 	```lua
-		Promise.delay(5):andThenCall(print, "This prints after 5 seconds")
+	Promise.delay(5):andThenCall(print, "This prints after 5 seconds")
 	```
 
 	@function delay
@@ -1226,7 +1228,7 @@ end
 	Similar to [Promise.andThen](#andThen), except the return value is the same as the value passed to the handler. In other words, you can insert a `:tap` into a Promise chain without affecting the value that downstream Promises receive.
 
 	```lua
-		getTheValue()
+	getTheValue()
 		:tap(print)
 		:andThen(function(theValue)
 			print("Got", theValue, "even though print returns nil!")
@@ -1258,13 +1260,13 @@ end
 	Attaches an `andThen` handler to this Promise that calls the given callback with the predefined arguments. The resolved value is discarded.
 
 	```lua
-		promise:andThenCall(someFunction, "some", "arguments")
+	promise:andThenCall(someFunction, "some", "arguments")
 	```
 
 	This is sugar for
 
 	```lua
-		promise:andThen(function()
+	promise:andThen(function()
 		return someFunction("some", "arguments")
 		end)
 	```
@@ -1285,15 +1287,15 @@ end
 	Attaches an `andThen` handler to this Promise that discards the resolved value and returns the given value from it.
 
 	```lua
-		promise:andThenReturn("some", "values")
+	promise:andThenReturn("some", "values")
 	```
 
 	This is sugar for
 
 	```lua
-		promise:andThen(function()
-			return "some", "values"
-		end)
+	promise:andThen(function()
+		return "some", "values"
+	end)
 	```
 
 	:::caution
@@ -1318,7 +1320,7 @@ end
 	Promises will only be cancelled if all of their consumers are also cancelled. This is to say that if you call `andThen` twice on the same promise, and you cancel only one of the child promises, it will not cancel the parent promise until the other child promise is also cancelled.
 
 	```lua
-		promise:cancel()
+	promise:cancel()
 	```
 ]=]
 function Promise.prototype:cancel()
@@ -1452,19 +1454,18 @@ end
 	local thing = createSomething()
 
 	doSomethingWith(thing)
-		:andThen(function()
-			print("It worked!")
-			-- do something..
-		end)
-		:catch(function()
-			warn("Oh no it failed!")
-		end)
-		:finally(function()
-			-- either way, destroy thing
+	:andThen(function()
+		print("It worked!")
+		-- do something..
+	end)
+	:catch(function()
+		warn("Oh no it failed!")
+	end)
+	:finally(function()
+		-- either way, destroy thing
 
-			thing:Destroy()
-		end)
-
+		thing:Destroy()
+	end)
 	```
 
 	@param finallyHandler (status: Status) -> ...any
@@ -1496,15 +1497,15 @@ end
 	Attaches a `finally` handler to this Promise that discards the resolved value and returns the given value from it.
 
 	```lua
-		promise:finallyReturn("some", "values")
+	promise:finallyReturn("some", "values")
 	```
 
 	This is sugar for
 
 	```lua
-		promise:finally(function()
-			return "some", "values"
-		end)
+	promise:finally(function()
+		return "some", "values"
+	end)
 	```
 
 	@param ... any -- Values to return from the function
@@ -1564,7 +1565,7 @@ end
 	:::
 
 	```lua
-		local worked, value = getTheValue():await()
+	local worked, value = getTheValue():await()
 
 	if worked then
 		print("got", value)

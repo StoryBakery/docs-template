@@ -33,10 +33,13 @@ website/
 - 빌드 순서: `JSON 생성 -> JSON → MDX -> Docusaurus 빌드`
 
 ## bakerywave 가이드
-- [bakerywave 시작하기](./bakerywave)
-- [bakerywave 설정](./bakerywave-config)
-- [Luau 태그](./luau-tags)
-- [Luau 타입 문법](./luau-types)
+- [bakerywave 시작하기](../bakerywave/)
+- [bakerywave 설정](../bakerywave/config)
+- [Luau 태그](../luau/tags)
+- [Luau 타입 문법](../luau/types)
+- [개발 가이드](../development/)
+- [기여 가이드](../development/contributing)
+- [릴리즈 가이드](../development/release)
 
 ## 커스텀 레벨 요약
 - Level 0: preset 옵션 수정

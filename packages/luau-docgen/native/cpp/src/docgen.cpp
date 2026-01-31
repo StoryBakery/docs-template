@@ -62,6 +62,8 @@ struct FieldInfo
     std::string name;
     std::string type;
     std::string description;
+    int line = 0;
+    int column = 1;
 };
 
 struct TypeTag
@@ -80,13 +82,15 @@ struct DocState
     std::string visibility;
     std::string since;
     bool unreleased = false;
-    std::string indexName;
+    bool event = false;
+    std::vector<std::string> extends;    std::string indexName;
     std::string inheritDoc;
     std::vector<std::string> includes;
     std::vector<std::string> snippets;
     std::vector<std::string> aliases;
     std::vector<std::string> realms;
     std::vector<std::string> tags;
+    std::vector<std::string> categories;
     std::string deprecatedVersion;
     std::string deprecatedDescription;
 };
@@ -119,6 +123,9 @@ struct Binding
     std::vector<ParamInfo> params;
     std::string returnType;
     int line = 0;
+    std::vector<FieldInfo> typeFields;
+    int typeTableStartLine = 0;
+    int typeTableEndLine = 0;
 };
 
 struct SymbolTypes
@@ -383,12 +390,65 @@ static std::pair<std::string, std::string> parseTypeAndDescription(const std::st
     return {typePart, description};
 }
 
+struct ParsedMemberName
+{
+    std::string within;
+    std::string name;
+    bool isMethod = false;
+};
+
+static ParsedMemberName parseMemberName(const std::string& raw)
+{
+    ParsedMemberName result;
+    result.name = raw;
+
+    if (raw.rfind("~:", 0) == 0)
+    {
+        result.within = "~";
+        result.name = raw.substr(2);
+        result.isMethod = true;
+        return result;
+    }
+
+    if (raw.rfind("~.", 0) == 0)
+    {
+        result.within = "~";
+        result.name = raw.substr(2);
+        return result;
+    }
+
+    size_t colon = raw.rfind(:);
+    size_t dot = raw.rfind(.);
+
+    if (colon != std::string::npos && colon > dot)
+    {
+        result.within = raw.substr(0, colon);
+        result.name = raw.substr(colon + 1);
+        result.isMethod = true;
+        return result;
+    }
+
+    if (dot != std::string::npos)
+    {
+        result.within = raw.substr(0, dot);
+        result.name = raw.substr(dot + 1);
+        return result;
+    }
+
+    return result;
+}
+
 static ParsedDoc parseDocBlock(const std::vector<std::string>& contentLines)
 {
     ParsedDoc doc;
     std::vector<std::string> lines = dedentLines(contentLines);
     bool inFence = false;
-    std::vector<std::string>* continuation = nullptr;
+    struct ContinuationState
+    {
+        std::vector<std::string>* description = nullptr;
+        std::string* type = nullptr;
+    };
+    ContinuationState continuation;
 
     for (const std::string& line : lines)
     {
@@ -438,13 +498,20 @@ static ParsedDoc parseDocBlock(const std::vector<std::string>& contentLines)
             }
             else if (tagName == "prop")
             {
-                auto [name, rest] = splitTagValue(tagValue);
-                doc.typeTags.push_back({"property", name, rest, false});
+                auto [rawName, rest] = splitTagValue(tagValue);
+                ParsedMemberName parsed = parseMemberName(rawName);
+                if (!parsed.within.empty() && doc.state.within.empty())
+                    doc.state.within = parsed.within;
+                doc.typeTags.push_back({"property", parsed.name, rest, false});
+                if (!rest.empty() && rest.find("--") == std::string::npos)
+                    continuation.type = &doc.typeTags.back().type;
             }
             else if (tagName == "type")
             {
                 auto [name, rest] = splitTagValue(tagValue);
                 doc.typeTags.push_back({"type", name, rest, false});
+                if (!rest.empty() && rest.find("--") == std::string::npos)
+                    continuation.type = &doc.typeTags.back().type;
             }
             else if (tagName == "interface")
             {
@@ -452,11 +519,24 @@ static ParsedDoc parseDocBlock(const std::vector<std::string>& contentLines)
             }
             else if (tagName == "function")
             {
-                doc.typeTags.push_back({"function", tagValue, "", false});
+                ParsedMemberName parsed = parseMemberName(tagValue);
+                if (!parsed.within.empty() && doc.state.within.empty())
+                    doc.state.within = parsed.within;
+                doc.typeTags.push_back({"function", parsed.name, "", parsed.isMethod});
             }
             else if (tagName == "method")
             {
-                doc.typeTags.push_back({"function", tagValue, "", true});
+                ParsedMemberName parsed = parseMemberName(tagValue);
+                if (!parsed.within.empty() && doc.state.within.empty())
+                    doc.state.within = parsed.within;
+                doc.typeTags.push_back({"function", parsed.name, "", true});
+            }
+            else if (tagName == "constructor")
+            {
+                ParsedMemberName parsed = parseMemberName(tagValue);
+                if (!parsed.within.empty() && doc.state.within.empty())
+                    doc.state.within = parsed.within;
+                doc.typeTags.push_back({"constructor", parsed.name, "", false});
             }
             else if (tagName == "within")
             {
@@ -465,12 +545,18 @@ static ParsedDoc parseDocBlock(const std::vector<std::string>& contentLines)
             else if (tagName == "field")
             {
                 auto [name, rest] = splitTagValue(tagValue);
+                bool hasSeparator = rest.find("--") != std::string::npos;
                 auto [typePart, description] = parseTypeAndDescription(rest);
                 doc.fields.push_back({name, typePart, description});
+                if (hasSeparator)
+                    continuation.description = &doc.fields.back().description;
+                else if (!doc.fields.back().type.empty())
+                    continuation.type = &doc.fields.back().type;
             }
             else if (tagName == "param")
             {
                 auto [name, rest] = splitTagValue(tagValue);
+                bool hasSeparator = rest.find("--") != std::string::npos;
                 auto [typePart, description] = parseTypeAndDescription(rest);
                 ParamInfo param;
                 param.name = name;
@@ -478,27 +564,38 @@ static ParsedDoc parseDocBlock(const std::vector<std::string>& contentLines)
                 if (!description.empty())
                     param.description.push_back(description);
                 doc.params.push_back(param);
-                continuation = &doc.params.back().description;
+                if (hasSeparator)
+                    continuation.description = &doc.params.back().description;
+                else if (!doc.params.back().type.empty())
+                    continuation.type = &doc.params.back().type;
             }
             else if (tagName == "return")
             {
+                bool hasSeparator = tagValue.find("--") != std::string::npos;
                 auto [typePart, description] = parseTypeAndDescription(tagValue);
                 ReturnInfo ret;
                 ret.type = typePart;
                 if (!description.empty())
                     ret.description.push_back(description);
                 doc.returns.push_back(ret);
-                continuation = &doc.returns.back().description;
+                if (hasSeparator)
+                    continuation.description = &doc.returns.back().description;
+                else if (!doc.returns.back().type.empty())
+                    continuation.type = &doc.returns.back().type;
             }
             else if (tagName == "error")
             {
+                bool hasSeparator = tagValue.find("--") != std::string::npos;
                 auto [typePart, description] = parseTypeAndDescription(tagValue);
                 ErrorInfo err;
                 err.type = typePart;
                 if (!description.empty())
                     err.description.push_back(description);
                 doc.errors.push_back(err);
-                continuation = &doc.errors.back().description;
+                if (hasSeparator)
+                    continuation.description = &doc.errors.back().description;
+                else if (!doc.errors.back().type.empty())
+                    continuation.type = &doc.errors.back().type;
             }
             else if (tagName == "yields")
             {
@@ -509,7 +606,20 @@ static ParsedDoc parseDocBlock(const std::vector<std::string>& contentLines)
                 if (!tagValue.empty())
                     doc.state.tags.push_back(tagValue);
             }
-            else if (tagName == "unreleased")
+            else if (tagName == "category")
+            {
+                if (!tagValue.empty())
+                    doc.state.categories.push_back(tagValue);
+            }
+            else if (tagName == "event")
+            {
+                doc.state.event = true;
+            }
+            else if (tagName == "extends")
+            {
+                if (!tagValue.empty())
+                    doc.state.extends.push_back(tagValue);
+            }            else if (tagName == "unreleased")
             {
                 doc.state.unreleased = true;
             }
@@ -584,6 +694,125 @@ static ParsedDoc parseDocBlock(const std::vector<std::string>& contentLines)
     }
 
     return doc;
+
+static std::vector<std::string> collectInlineDocLines(const Source& source, int startLine, int targetLine)
+{
+    std::vector<std::string> lines;
+    if (targetLine <= 1)
+        return lines;
+
+    int index = targetLine - 2;
+    int minIndex = std::max(0, startLine - 1);
+
+    while (index >= minIndex && trim(source.lines[index]).empty())
+        index--;
+
+    if (index < minIndex)
+        return lines;
+
+    std::string trimmed = trim(source.lines[index]);
+
+    if (trimmed.rfind("---", 0) == 0)
+    {
+        int end = index;
+        while (index >= minIndex && trim(source.lines[index]).rfind("---", 0) == 0)
+            index--;
+
+        for (int lineIndex = index + 1; lineIndex <= end; ++lineIndex)
+        {
+            std::string raw = source.lines[lineIndex];
+            size_t pos = raw.find("---");
+            std::string content = pos == std::string::npos ? raw : raw.substr(pos + 3);
+            if (!content.empty() && content.front() == ' ')
+                content.erase(content.begin());
+            lines.push_back(content);
+        }
+        return lines;
+    }
+
+    if (trimmed.find("]=]") != std::string::npos)
+    {
+        int end = index;
+        while (index >= minIndex)
+        {
+            if (source.lines[index].find("--[=[") != std::string::npos)
+                break;
+            index--;
+        }
+
+        if (index < minIndex)
+            return lines;
+
+        size_t startPos = source.lines[index].find("--[=[");
+        std::string first = startPos == std::string::npos ? source.lines[index] : source.lines[index].substr(startPos + 5);
+        if (!first.empty())
+            lines.push_back(first);
+
+        for (int lineIndex = index + 1; lineIndex <= end; ++lineIndex)
+        {
+            std::string current = source.lines[lineIndex];
+            size_t endPos = current.find("]=]");
+            if (endPos != std::string::npos)
+            {
+                std::string beforeEnd = current.substr(0, endPos);
+                if (!beforeEnd.empty())
+                    lines.push_back(beforeEnd);
+                break;
+            }
+            lines.push_back(current);
+        }
+    }
+
+    return lines;
+}
+
+static std::string joinInlineDescription(const std::vector<std::string>& lines)
+{
+    std::vector<std::string> trimmed = lines;
+    while (!trimmed.empty() && trim(trimmed.front()).empty())
+        trimmed.erase(trimmed.begin());
+    while (!trimmed.empty() && trim(trimmed.back()).empty())
+        trimmed.pop_back();
+
+    std::ostringstream out;
+    for (size_t i = 0; i < trimmed.size(); ++i)
+    {
+        out << trimRight(trimmed[i]);
+        if (i + 1 < trimmed.size())
+            out << "\n";
+    }
+
+    return trimRight(out.str());
+}
+
+static std::vector<FieldInfo> collectTypeTableFields(const Source& source, const Luau::AstTypeTable* table)
+{
+    std::vector<FieldInfo> fields;
+    if (!table)
+        return fields;
+
+    int startLine = static_cast<int>(table->location.begin.line) + 1;
+    int endLine = static_cast<int>(table->location.end.line) + 1;
+
+    for (const Luau::AstTableProp& prop : table->props)
+    {
+        FieldInfo field;
+        field.name = prop.name.value;
+        field.line = static_cast<int>(prop.location.begin.line) + 1;
+        field.column = static_cast<int>(prop.location.begin.column) + 1;
+
+        if (prop.type)
+            field.type = extractLocationText(source, prop.type->location);
+
+        std::vector<std::string> docLines = collectInlineDocLines(source, startLine, field.line);
+        field.description = joinInlineDescription(docLines);
+
+        if (field.line >= startLine && field.line <= endLine)
+            fields.push_back(field);
+    }
+
+    return fields;
+}
 }
 
 static std::string joinDescription(const std::vector<std::string>& lines, std::string& summaryOut)
@@ -687,6 +916,12 @@ static Binding buildFunctionBinding(
         if (func->varargAnnotation)
             param.type = extractLocationText(source, func->varargAnnotation->location);
         binding.params.push_back(param);
+    }
+
+    if (!binding.isMethod && !binding.params.empty())
+    {
+        if (binding.params[0].name == "self")
+            binding.isMethod = true;
     }
 
     if (func->returnAnnotation)
@@ -833,6 +1068,24 @@ struct BindingCollector : Luau::AstVisitor
         }
         return false;
     }
+    bool visit(Luau::AstStatTypeAlias* node) override
+    {
+        Binding binding;
+        binding.kind = "type";
+        binding.name = node->name.value;
+        binding.line = static_cast<int>(node->location.begin.line) + 1;
+
+        if (auto table = node->type ? node->type->as<Luau::AstTypeTable>() : nullptr)
+        {
+            binding.typeFields = collectTypeTableFields(source, table);
+            binding.typeTableStartLine = static_cast<int>(table->location.begin.line) + 1;
+            binding.typeTableEndLine = static_cast<int>(table->location.end.line) + 1;
+        }
+
+        bindings.push_back(binding);
+        return false;
+    }
+
 };
 
 static std::vector<Binding> collectBindings(const Source& source)
@@ -1579,18 +1832,11 @@ static Symbol buildSymbol(
             within = binding->within;
     }
 
+    if (symbol.kind == "function" && symbol.name == "new" && !isMethod && !within.empty())
+        symbol.kind = "constructor";
+
     if (symbol.kind.empty() || symbol.name.empty())
         return symbol;
-
-    if (within.empty() && symbol.kind != "class" && symbol.kind != "type" && symbol.kind != "interface")
-    {
-        diagnostics.push_back({
-            "warning",
-            relativePath,
-            block.startLine,
-            "@within missing for non-class symbol.",
-        });
-    }
 
     if (doc.state.readonly && symbol.kind != "property")
     {
@@ -1620,6 +1866,12 @@ static Symbol buildSymbol(
 
     if (doc.state.unreleased)
         symbol.tags.push_back({"unreleased", "", true, true, ""});
+
+    if (doc.state.event)
+        symbol.tags.push_back({"event", "", true, true, ""});
+
+    for (const std::string& value : doc.state.extends)
+        symbol.tags.push_back({"extends", value, false, false, ""});
 
     if (!doc.state.deprecatedVersion.empty())
     {
@@ -1652,7 +1904,7 @@ static Symbol buildSymbol(
 
     std::optional<Luau::TypeId> officialType = resolveSymbolType(analysis, within, symbol.name);
 
-    if (symbol.kind == "function")
+    if (symbol.kind == "function" || symbol.kind == "constructor")
     {
         FunctionAnalysis functionAnalysis;
         if (officialType)
@@ -1759,11 +2011,82 @@ static std::vector<Symbol> buildSymbols(
 )
 {
     std::vector<Symbol> symbols;
+    std::vector<ParsedDoc> docs;
+    docs.reserve(context.blocks.size());
+
+    std::vector<std::string> classNames;
+    std::string currentClassName;
 
     for (const DocBlock& block : context.blocks)
     {
         ParsedDoc doc = parseDocBlock(block.contentLines);
+        docs.push_back(doc);
+
+        for (const TypeTag& tag : doc.typeTags)
+        {
+            if (tag.kind == "class" && !tag.name.empty())
+            {
+                if (std::find(classNames.begin(), classNames.end(), tag.name) == classNames.end())
+                    classNames.push_back(tag.name);
+            }
+        }
+    }
+
+    for (size_t index = 0; index < context.blocks.size(); ++index)
+    {
+        const DocBlock& block = context.blocks[index];
+
+        bool insideTypeTable = false;
+        for (const Binding& binding : context.bindings)
+        {
+            if (binding.typeTableStartLine > 0 && block.startLine >= binding.typeTableStartLine && block.startLine <= binding.typeTableEndLine)
+            {
+                insideTypeTable = true;
+                break;
+            }
+        }
+
+        if (insideTypeTable)
+            continue;
+
+        ParsedDoc doc = docs[index];
+
+        for (const TypeTag& tag : doc.typeTags)
+        {
+            if (tag.kind == "class" && !tag.name.empty())
+                currentClassName = tag.name;
+        }
+
+        if (doc.state.within == "~" && !currentClassName.empty())
+            doc.state.within = currentClassName;
+
         const Binding* binding = findBindingAfterLine(context.bindings, block.endLine);
+
+        const TypeTag* typeTag = doc.typeTags.empty() ? nullptr : &doc.typeTags.front();
+        std::string inferredKind;
+        if (typeTag)
+            inferredKind = typeTag->kind;
+        else if (binding)
+            inferredKind = binding->kind;
+
+        const bool needsWithin = inferredKind == "function" || inferredKind == "property" || inferredKind == "constructor";
+
+        if (doc.state.within.empty() && binding && !binding->within.empty())
+            doc.state.within = binding->within;
+
+        if (doc.state.within.empty() && needsWithin && classNames.size() == 1)
+            doc.state.within = classNames.front();
+
+        if (doc.state.within.empty() && needsWithin)
+        {
+            diagnostics.push_back({
+                classNames.empty() ? "error" : "warning",
+                context.rootRelativePath,
+                block.startLine,
+                classNames.empty() ? "@class missing for this file." : "@within missing for ambiguous class ownership.",
+            });
+        }
+
         Symbol symbol = buildSymbol(doc, block, binding, context.source, context.rootRelativePath, analysis, diagnostics);
         if (symbol.kind.empty())
             continue;
@@ -1793,38 +2116,74 @@ static std::vector<Symbol> buildSymbols(
             }
         }
 
-        if (binding && symbol.kind == "function" && !doc.params.empty())
+        if (symbol.kind == "type" && binding && !binding->typeFields.empty())
         {
-            std::vector<std::string> docParamNames;
+            for (const FieldInfo& field : binding->typeFields)
+            {
+                if (field.name.empty())
+                    continue;
+
+                Symbol fieldSymbol;
+                fieldSymbol.kind = "field";
+                fieldSymbol.name = field.name;
+                fieldSymbol.qualifiedName = symbol.name + "." + field.name;
+                fieldSymbol.file = context.rootRelativePath;
+                fieldSymbol.line = field.line > 0 ? field.line : block.startLine;
+                fieldSymbol.column = field.column > 0 ? field.column : findColumn(context.source.lines, block.startLine);
+                fieldSymbol.summary = field.description;
+                fieldSymbol.descriptionMarkdown = field.description;
+                fieldSymbol.visibility = symbol.visibility;
+                fieldSymbol.types.display = field.type;
+                fieldSymbol.types.propertyType = field.type;
+                symbols.push_back(fieldSymbol);
+            }
+        }
+
+        if (binding && (symbol.kind == "function" || symbol.kind == "constructor") && !doc.params.empty())
+        {
+            bool hasExplicitParamType = false;
             for (const ParamInfo& param : doc.params)
-                docParamNames.push_back(param.name);
-
-            std::vector<std::string> bindingParamNames;
-            for (const ParamInfo& param : binding->params)
-                bindingParamNames.push_back(param.name);
-
-            auto missing = std::vector<std::string>();
-            for (const std::string& name : bindingParamNames)
             {
-                if (std::find(docParamNames.begin(), docParamNames.end(), name) == docParamNames.end())
-                    missing.push_back(name);
+                if (!param.type.empty() && param.type != "any")
+                {
+                    hasExplicitParamType = true;
+                    break;
+                }
             }
 
-            auto extra = std::vector<std::string>();
-            for (const std::string& name : docParamNames)
+            if (hasExplicitParamType)
             {
-                if (std::find(bindingParamNames.begin(), bindingParamNames.end(), name) == bindingParamNames.end())
-                    extra.push_back(name);
-            }
+                std::vector<std::string> docParamNames;
+                for (const ParamInfo& param : doc.params)
+                    docParamNames.push_back(param.name);
 
-            if (!missing.empty() || !extra.empty())
-            {
-                diagnostics.push_back({
-                    "warning",
-                    context.rootRelativePath,
-                    block.startLine,
-                    "@param does not match function parameters.",
-                });
+                std::vector<std::string> bindingParamNames;
+                for (const ParamInfo& param : binding->params)
+                    bindingParamNames.push_back(param.name);
+
+                auto missing = std::vector<std::string>();
+                for (const std::string& name : bindingParamNames)
+                {
+                    if (std::find(docParamNames.begin(), docParamNames.end(), name) == docParamNames.end())
+                        missing.push_back(name);
+                }
+
+                auto extra = std::vector<std::string>();
+                for (const std::string& name : docParamNames)
+                {
+                    if (std::find(bindingParamNames.begin(), bindingParamNames.end(), name) == bindingParamNames.end())
+                        extra.push_back(name);
+                }
+
+                if (!missing.empty() || !extra.empty())
+                {
+                    diagnostics.push_back({
+                        "warning",
+                        context.rootRelativePath,
+                        block.startLine,
+                        "@param does not match function parameters.",
+                    });
+                }
             }
         }
     }
@@ -2399,7 +2758,7 @@ static void writeSymbol(JsonWriter& writer, const Symbol& symbol)
     writer.valueString(symbol.types.display);
     writer.key("structured");
     writer.beginObject();
-    if (symbol.kind == "function")
+    if (symbol.kind == "function" || symbol.kind == "constructor")
     {
         writer.key("params");
         writeParams(writer, symbol.types.params);

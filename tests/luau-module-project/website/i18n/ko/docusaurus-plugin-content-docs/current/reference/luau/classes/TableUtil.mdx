@@ -1,0 +1,347 @@
+# TableUtil
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L23"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+
+루아 테이블을 다룰 때 자주 사용하는 유틸리티 함수를 묶어 제공합니다.
+배열과 딕셔너리 구조를 간결하게 조작할 수 있도록 도와줍니다.
+
+## Summary
+
+### Functions
+- [binarySearch](#binarySearch)
+- [bisectLeft](#bisectLeft)
+- [bisectRight](#bisectRight)
+- [count](#count)
+- [deepClone](#deepClone)
+- [deepCount](#deepCount)
+- [deepFreeze](#deepFreeze)
+- [every](#every)
+- [fill](#fill)
+- [filter](#filter)
+- [findIndex](#findIndex)
+- [findValue](#findValue)
+- [includes](#includes)
+- [isArray](#isArray)
+- [isDict](#isDict)
+- [isEmpty](#isEmpty)
+- [keys](#keys)
+- [map](#map)
+- [merge](#merge)
+- [mergeArray](#mergeArray)
+- [mergeDict](#mergeDict)
+- [randomIpair](#randomIpair)
+- [randomPair](#randomPair)
+- [removeDupes](#removeDupes)
+- [reverse](#reverse)
+- [reversed](#reversed)
+- [shallowEqual](#shallowEqual)
+- [slice](#slice)
+- [sorted](#sorted)
+- [values](#values)
+
+## Functions {#Functions}
+
+### binarySearch {#binarySearch}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L532"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+<item>({item}, item, ((item, item) -> boolean)?) -> number?
+```
+
+정렬된 배열에서 대상 값을 이진 탐색합니다.
+
+### bisectLeft {#bisectLeft}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L558"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+<item>({item}, item, ((item, item) -> boolean)?) -> number
+```
+
+정렬된 배열에서 대상이 들어갈 가장 왼쪽 위치를 반환합니다.
+
+### bisectRight {#bisectRight}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L582"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+<item>({item}, item, ((item, item) -> boolean)?) -> number
+```
+
+정렬된 배열에서 대상이 들어갈 가장 오른쪽 위치를 반환합니다.
+
+### count {#count}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L34"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(any) -> number
+```
+
+테이블에 들어 있는 요소 수를 반환합니다.
+
+### deepClone {#deepClone}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L121"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+<T>(T) -> T
+```
+
+모든 하위 테이블까지 재귀적으로 복제합니다.
+
+### deepCount {#deepCount}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L49"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(any) -> number
+```
+
+중첩 테이블을 모두 탐색해 요소 수를 계산합니다.
+
+### deepFreeze {#deepFreeze}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L476"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(any) -> (...any)
+```
+
+테이블과 모든 하위 테이블을 재귀적으로 freeze 합니다.
+
+### every {#every}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L340"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(any, any) -> (...any)
+```
+
+모든 값이 조건을 통과하는지 검사합니다.
+
+### fill {#fill}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L426"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(any, any, any, any) -> (...any)
+```
+
+배열형 테이블의 구간을 동일한 값으로 채웁니다.
+
+### filter {#filter}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L306"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(any, any) -> (...any)
+```
+
+조건에 맞는 항목만 모아 새 테이블을 만들습니다.
+
+### findIndex {#findIndex}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L289"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(any, any) -> (...any)
+```
+
+조건에 맞는 첫 번째 키를 반환합니다.
+
+### findValue {#findValue}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L272"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(any, any) -> (...any)
+```
+
+조건에 맞는 첫 번째 값을 반환합니다.
+
+### includes {#includes}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L65"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(any, any) -> boolean
+```
+
+테이블에 값이 포함되어 있는지 확인합니다.
+
+### isArray {#isArray}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L92"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(any) -> boolean
+```
+
+키가 1..n 형태인지 검사합니다.
+
+### isDict {#isDict}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L110"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(any) -> boolean
+```
+
+배열이 아닌 사전 형태인지 검사합니다.
+
+### isEmpty {#isEmpty}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L81"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(any) -> boolean
+```
+
+테이블에 값이 전혀 없는지 확인합니다.
+
+### keys {#keys}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L177"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(any) -> (...any)
+```
+
+테이블의 키를 배열로 반환합니다.
+
+### map {#map}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L324"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(any, any) -> (...any)
+```
+
+모든 값을 변환한 새 배열을 반환합니다.
+
+### merge {#merge}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L362"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(...{ [any]: any }?) -> { [any]: any }
+```
+
+여러 테이블을 앞쪽부터 차례로 병합합니다.
+
+문자열과 숫자 키가 혼합된 테이블을 지원합니다.
+키가 숫자면 배열로 취급하여 순서대로 삽입합니다.
+키가 문자열이면 딕셔너리로 취급하여 뒤쪽 값으로 덮어씁니다.
+
+### mergeArray {#mergeArray}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L385"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(...any) -> (...any)
+```
+
+배열을 순서대로 이어 붙인 새 배열을 만듭니다.
+
+### mergeDict {#mergeDict}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L404"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(...any) -> (...any)
+```
+
+사전형 테이블을 뒤쪽 값으로 덮어쓰며 병합합니다.
+
+### randomIpair {#randomIpair}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L208"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(any) -> (...any)
+```
+
+배열형 테이블에서 임의의 인덱스와 값을 돌려줍니다.
+
+### randomPair {#randomPair}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L221"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(any) -> (...any)
+```
+
+사전형 테이블에서 임의의 키와 값을 돌려줍니다.
+
+### removeDupes {#removeDupes}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L451"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(any) -> (...any)
+```
+
+배열에서 중복 값을 제거하고 순서를 유지합니다.
+
+### reverse {#reverse}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L137"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+<Item>({Item}) -> (...any)
+```
+
+배열형 테이블을 원본에서 역순으로 뒤집습니다.
+
+### reversed {#reversed}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L156"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+<Item>({Item}) -> {Item}
+```
+
+원본을 유지한 채 역순 배열을 반환합니다.
+
+### shallowEqual {#shallowEqual}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L500"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(any, any) -> (...any)
+```
+
+두 테이블의 얕은 동등성을 비교합니다.
+
+### slice {#slice}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L256"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(any, any, any, any) -> (...any)
+```
+
+배열에서 지정한 구간을 잘라 새 배열로 돌려줍니다.
+
+### sorted {#sorted}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L240"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(any, any) -> (...any)
+```
+
+정렬 결과를 새 배열로 반환합니다.
+
+### values {#values}
+
+<div class="sb-ref-heading-actions"><a class="sb-ref-source sb-ref-source-inline" href="https://github.com/StoryBakery/bakerywave/blob/main/src/TableUtil.luau#L192"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sb-ref-source-icon"><path fill="currentColor" d="M8.7 16.6 4.1 12l4.6-4.6L7.3 6l-6 6 6 6 1.4-1.4zm6.6 0L19.9 12l-4.6-4.6L16.7 6l6 6-6 6-1.4-1.4zM10 19l4-14h2l-4 14z"/></svg></a></div>
+
+```lua
+(any) -> (...any)
+```
+
+테이블의 값을 배열로 반환합니다.

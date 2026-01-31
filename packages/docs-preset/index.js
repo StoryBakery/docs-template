@@ -60,6 +60,24 @@ function resolveProjectRoot(siteDir) {
   return siteDir;
 }
 
+function ensurePrismLua(themeConfig) {
+  const options = { ...themeConfig };
+  const prism = { ...(options.prism || {}) };
+  const additional = Array.isArray(prism.additionalLanguages)
+    ? prism.additionalLanguages.slice()
+    : [];
+
+  if (!additional.includes("lua")) {
+    additional.push("lua");
+  }
+
+  prism.additionalLanguages = additional;
+  options.prism = prism;
+  return options;
+}
+
+
+
 function findBakerywaveTomlPath(siteDir) {
   const projectRoot = resolveProjectRoot(siteDir);
   const candidates = [
@@ -167,6 +185,11 @@ module.exports = function storybakeryDocsPreset(context, opts = {}) {
   }
 
   const themeOptions = opts.theme || {};
+  const baseThemeConfig = (context.siteConfig && context.siteConfig.themeConfig) || {};
+  const themeConfig = ensurePrismLua({ ...baseThemeConfig, ...(opts.themeConfig || {}) });
+  if (context.siteConfig) {
+    context.siteConfig.themeConfig = themeConfig;
+  }
   const pagesOptions = opts.pages || {};
 
   const themes = [

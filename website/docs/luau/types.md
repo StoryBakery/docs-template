@@ -69,6 +69,28 @@ string | number
 --- .name string -- 사용자 이름
 ```
 
+## 멀티라인 타입 표기(권장)
+
+타입이 길어지면 Luau 문법과 유사한 들여쓰기를 사용합니다.
+
+```lua
+--- @type RequestOptions {
+---   url: string,
+---   method: "GET" | "POST",
+---   headers: { [string]: string }?,
+--- }
+```
+
+- `@type`, `@param`, `@return`의 타입이 여러 줄이면 다음 줄부터 2칸 들여씁니다.
+- 들여쓰기 블록 내부는 Luau 타입 표기 규칙을 그대로 따릅니다.
+
+## Luau 린트 연동
+
+reference 생성 시 Luau 파서/린트를 통해 타입 표기를 검증합니다.
+
+- 유효하지 않은 타입 표기는 경고 또는 오류로 보고합니다.
+- CI에서는 경고를 오류로 승격할 수 있습니다.
+
 ## 문서 작성 팁
 
 - 문서용 타입 표기는 Luau 타입 문법을 그대로 사용합니다.

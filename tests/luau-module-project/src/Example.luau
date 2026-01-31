@@ -12,16 +12,19 @@ Example.version = "0.1.0"
 	@within Example
 	
 	Fires when the instance changes.
+	예시예시!! 
 ]=]
 Example.Changed = nil
 
 --[=[
+	@constructor
+	
 	Creates a new Example instance.
 
 	@param name string
 	@return Example
 ]=]
-function Example.new(name: string)
+function Example.new(name: string): Example
 	return setmetatable({ name = name, enabled = false }, Example)
 end
 

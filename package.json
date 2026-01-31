@@ -7,5 +7,8 @@
   "scripts": {
     "test": "npm --prefix tests/luau-module-project/website test",
     "test:website": "npm --prefix tests/luau-module-project/website test"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
   }
 }

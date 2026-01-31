@@ -10,26 +10,26 @@ bakerywave는 Docusaurus CLI를 최대한 그대로 노출하면서, reference �
 
 ## 설치
 
-Node.js가 필요합니다.
+bakerywave는 GitHub Releases를 기준으로 배포합니다.
 
-### 새 프로젝트
+### rokit 설치
 
-1. 프로젝트 디렉터리에서 `npm create @storybakery/docs`를 실행한다.
-2. 생성된 `website/`에서 `npm install`을 실행한다.
-
-### 기존 프로젝트
-
-다음 패키지를 추가합니다.
-
-```bash
-npm install --save @storybakery/bakerywave
+Windows 예시:
+```
+[tools]
+bakerywave = { source = "github", repo = "StoryBakery/bakerywave", tag = "vX.Y.Z", asset = "bakerywave-windows-x64.zip" }
 ```
 
-CLI 실행은 아래 중 하나를 사용합니다.
+Linux 예시:
+```
+[tools]
+bakerywave = { source = "github", repo = "StoryBakery/bakerywave", tag = "vX.Y.Z", asset = "bakerywave-linux-x64.zip" }
+```
 
-```bash
-npx bakerywave start
-npm exec bakerywave -- start
+macOS 예시:
+```
+[tools]
+bakerywave = { source = "github", repo = "StoryBakery/bakerywave", tag = "vX.Y.Z", asset = "bakerywave-macos-x64.zip" }
 ```
 
 ## 기본 사용
@@ -100,3 +100,7 @@ reference 관련 설정은 아래 순서로 병합됩니다.
 2. `bakerywave.toml`의 `[reference]`
 3. `@storybakery/docs-preset`의 `reference` 옵션
 4. 기본값
+
+## 참고 문서
+- [CLI 사용법](./cli)
+- [설정](./config)

@@ -9,3 +9,12 @@ outDir = "website/docs/reference/luau"
 manifestPath = "website/.generated/reference/manifest.json"
 renderMode = "mdx"
 clean = true
+codeTabSize = 4
+
+[i18n]
+defaultLocale = "en"
+locales = ["en", "ko"]
+referenceLocales = ["ko"]
+
+[i18n.reference]
+copy = true

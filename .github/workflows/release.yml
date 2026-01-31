@@ -10,28 +10,55 @@ permissions:
 
 jobs:
   build-native-rust:
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            artifact: luau-docgen-windows-x64
+            bin: packages/luau-docgen/native/target/release/luau-docgen.exe
+          - os: ubuntu-latest
+            artifact: luau-docgen-linux-x64
+            bin: packages/luau-docgen/native/target/release/luau-docgen
+          - os: macos-latest
+            artifact: luau-docgen-macos-x64
+            bin: packages/luau-docgen/native/target/release/luau-docgen
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
-      
+
       - name: Build Native Binary (Release)
         working-directory: packages/luau-docgen/native
         run: cargo build --release
-      
+
       - name: Upload Native Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: luau-docgen-exe
-          path: packages/luau-docgen/native/target/release/luau-docgen.exe
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.bin }}
 
   build-cli-pkg:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            artifact: bakerywave-windows-x64
+            target: node20-win-x64
+            output: bakerywave.exe
+          - os: ubuntu-latest
+            artifact: bakerywave-linux-x64
+            target: node20-linux-x64
+            output: bakerywave-linux
+          - os: macos-latest
+            artifact: bakerywave-macos-x64
+            target: node20-macos-x64
+            output: bakerywave-macos
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -42,39 +69,47 @@ jobs:
         run: npm ci
 
       - name: Build Executable
-        run: npx pkg packages/bakerywave/package.json -t node20-win-x64 -o bakerywave.exe
-      
+        run: npx pkg packages/bakerywave/package.json -t ${{ matrix.target }} -o ${{ matrix.output }}
+
       - name: Upload Bakerywave Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: bakerywave-exe
-          path: bakerywave.exe
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.output }}
 
   publish-release:
     needs: [build-native-rust, build-cli-pkg]
     runs-on: ubuntu-latest
-    
+
     steps:
-      - name: Download Native Artifact
+      - name: Download Native Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: luau-docgen-exe
-          path: bakerywave-windows-x64
-          
-      - name: Download Bakerywave Artifact
+          pattern: luau-docgen-*
+          path: dist/native
+
+      - name: Download Bakerywave Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: bakerywave-exe
-          path: bakerywave-windows-x64
+          pattern: bakerywave-*
+          path: dist/cli
 
       - name: Zip Release
         run: |
-          cd bakerywave-windows-x64
-          zip -r ../bakerywave-windows-x64.zip ./*
-          
+          cd dist
+          for dir in native/*; do
+            name=$(basename "$dir")
+            zip -r "${name}.zip" "$dir"
+          done
+          for dir in cli/*; do
+            name=$(basename "$dir")
+            zip -r "${name}.zip" "$dir"
+          done
+          ls -la *.zip
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: bakerywave-windows-x64.zip
+          files: dist/*.zip
           draft: true
           generate_release_notes: true

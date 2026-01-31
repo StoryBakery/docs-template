@@ -244,6 +244,12 @@ function buildFunctionInfo(nameRaw, paramsRaw, returnType) {
     name = nameRaw.slice(dotIndex + 1);
   }
 
+  if (!isMethod && within && params.length > 0) {
+    if (params[0].name === "self") {
+      isMethod = true;
+    }
+  }
+
   return {
     kind: "function",
     name,
@@ -254,11 +260,24 @@ function buildFunctionInfo(nameRaw, paramsRaw, returnType) {
   };
 }
 
-function parseBinding(line) {
+function parseBindingAt(lines, index) {
+  const line = lines[index];
   const cleanLine = line.split("--")[0];
   const functionInfo = parseFunctionBinding(cleanLine);
   if (functionInfo) {
     return functionInfo;
+  }
+
+  const typeMatch = cleanLine.match(/^\s*(export\s+)?type\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*\{/);
+  if (typeMatch) {
+    const result = extractTypeTableFields(lines, index);
+    return {
+      kind: "type",
+      name: typeMatch[2],
+      within: null,
+      typeFields: result.fields,
+      typeTableRange: { startLine: index + 1, endLine: result.endIndex + 1 },
+    };
   }
 
   const assignMatch = cleanLine.match(/^([A-Za-z0-9_\.]+)\s*=/);
@@ -312,6 +331,183 @@ function parseTypeAndDescription(value) {
   return { typePart, description };
 }
 
+function parseMemberName(value) {
+  const trimmed = value ? value.trim() : "";
+  if (!trimmed) {
+    return { within: null, name: "", isMethod: false };
+  }
+
+  if (trimmed.startsWith("~:")) {
+    return { within: "~", name: trimmed.slice(2), isMethod: true };
+  }
+
+  if (trimmed.startsWith("~.")) {
+    return { within: "~", name: trimmed.slice(2), isMethod: false };
+  }
+
+  const colonIndex = trimmed.lastIndexOf(":");
+  const dotIndex = trimmed.lastIndexOf(".");
+
+  if (colonIndex !== -1 && colonIndex > dotIndex) {
+    return {
+      within: trimmed.slice(0, colonIndex),
+      name: trimmed.slice(colonIndex + 1),
+      isMethod: true,
+    };
+  }
+
+  if (dotIndex !== -1) {
+    return {
+      within: trimmed.slice(0, dotIndex),
+      name: trimmed.slice(dotIndex + 1),
+      isMethod: false,
+    };
+  }
+
+  return { within: null, name: trimmed, isMethod: false };
+}
+
+function countChar(value, char) {
+  let count = 0;
+  for (const current of value) {
+    if (current === char) {
+      count += 1;
+    }
+  }
+  return count;
+}
+
+function joinInlineDescription(lines) {
+  if (!lines || lines.length === 0) {
+    return "";
+  }
+  const trimmed = lines.slice();
+  while (trimmed.length > 0 && trimmed[0].trim().length === 0) {
+    trimmed.shift();
+  }
+  while (trimmed.length > 0 && trimmed[trimmed.length - 1].trim().length === 0) {
+    trimmed.pop();
+  }
+  return trimmed.join("\n").trimEnd();
+}
+
+function extractTypeTableFields(lines, startIndex) {
+  const fields = [];
+  let depth = 0;
+  let started = false;
+  let index = startIndex;
+  let endIndex = startIndex;
+  let pendingDoc = null;
+
+  for (; index < lines.length; index += 1) {
+    const line = lines[index];
+    const trimmed = line.trim();
+
+    if (!started) {
+      const braceIndex = line.indexOf("{");
+      if (braceIndex !== -1) {
+        started = true;
+        depth = 1;
+      }
+    } else {
+      depth += countChar(line, "{");
+      depth -= countChar(line, "}");
+    }
+
+    if (!started) {
+      continue;
+    }
+
+    if (trimmed.startsWith("---")) {
+      const contentLines = [];
+      let cursor = index;
+      while (cursor < lines.length && lines[cursor].trim().startsWith("---")) {
+        contentLines.push(lines[cursor].replace(/^\s*---\s?/, ""));
+        cursor += 1;
+      }
+      pendingDoc = contentLines;
+      index = cursor - 1;
+      continue;
+    }
+
+    if (trimmed.startsWith("--[=[")) {
+      const contentLines = [];
+      let cursor = index;
+      const startOffset = lines[cursor].indexOf("--[=[") + 5;
+      const afterStart = lines[cursor].slice(startOffset);
+      if (afterStart.length > 0) {
+        contentLines.push(afterStart);
+      }
+      cursor += 1;
+      while (cursor < lines.length) {
+        const current = lines[cursor];
+        const endIndex = current.indexOf("]=]");
+        if (endIndex !== -1) {
+          const beforeEnd = current.slice(0, endIndex);
+          if (beforeEnd.length > 0) {
+            contentLines.push(beforeEnd);
+          }
+          break;
+        }
+        contentLines.push(current);
+        cursor += 1;
+      }
+      pendingDoc = contentLines;
+      index = cursor;
+      continue;
+    }
+
+    const fieldMatch = line.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(.*)$/);
+    if (fieldMatch) {
+      const name = fieldMatch[1];
+      let typeText = fieldMatch[2] || "";
+      let continueIndex = index;
+
+      while (typeText.trim().length > 0 && !typeText.trim().endsWith(",") && !typeText.includes("}") && continueIndex + 1 < lines.length) {
+        if (lines[continueIndex].includes("}") || lines[continueIndex].includes(",")) {
+          break;
+        }
+        continueIndex += 1;
+        typeText += "\n" + lines[continueIndex].trim();
+        if (lines[continueIndex].includes("}") || lines[continueIndex].includes(",")) {
+          break;
+        }
+      }
+
+      typeText = typeText.replace(/[,}].*$/, "").trim();
+      const description = joinInlineDescription(pendingDoc);
+      pendingDoc = null;
+
+      fields.push({
+        name,
+        type: typeText || null,
+        description: description || null,
+        line: index + 1,
+      });
+    }
+
+    if (depth <= 0) {
+      endIndex = index;
+      break;
+    }
+  }
+
+  return { fields, endIndex };
+}
+
+function findTypeTableRanges(lines) {
+  const ranges = [];
+  for (let i = 0; i < lines.length; i += 1) {
+    const line = lines[i];
+    if (/^\s*(export\s+)?type\s+[A-Za-z_][A-Za-z0-9_]*\s*=\s*\{/.test(line)) {
+      const result = extractTypeTableFields(lines, i);
+      ranges.push({ startLine: i + 1, endLine: result.endIndex + 1 });
+      i = result.endIndex;
+    }
+  }
+  return ranges;
+}
+
 function parseDocBlock(contentLines) {
   const lines = dedentLines(contentLines);
   const descriptionLines = [];
@@ -337,6 +533,9 @@ function parseDocBlock(contentLines) {
     includes: [],
     snippets: [],
     aliases: [],
+    event: false,
+    extends: [],
+    categories: [],
   };
 
   let inFence = false;
@@ -376,8 +575,12 @@ function parseDocBlock(contentLines) {
           typeTags.push({ kind: "class", name: tag.value });
           break;
         case "prop": {
-          const { name, rest } = splitTagValue(tag.value);
-          typeTags.push({ kind: "property", name, type: rest || null });
+          const { name: rawName, rest } = splitTagValue(tag.value);
+          const parsed = parseMemberName(rawName);
+          if (parsed.within && !state.within) {
+            state.within = parsed.within;
+          }
+          typeTags.push({ kind: "property", name: parsed.name, type: rest || null });
           break;
         }
         case "type": {
@@ -388,12 +591,30 @@ function parseDocBlock(contentLines) {
         case "interface":
           typeTags.push({ kind: "interface", name: tag.value });
           break;
-        case "function":
-          typeTags.push({ kind: "function", name: tag.value, isMethod: false });
+        case "function": {
+          const parsed = parseMemberName(tag.value);
+          if (parsed.within && !state.within) {
+            state.within = parsed.within;
+          }
+          typeTags.push({ kind: "function", name: parsed.name, isMethod: parsed.isMethod });
           break;
-        case "method":
-          typeTags.push({ kind: "function", name: tag.value, isMethod: true });
+        }
+        case "method": {
+          const parsed = parseMemberName(tag.value);
+          if (parsed.within && !state.within) {
+            state.within = parsed.within;
+          }
+          typeTags.push({ kind: "function", name: parsed.name, isMethod: true });
           break;
+        }
+        case "constructor": {
+          const parsed = parseMemberName(tag.value);
+          if (parsed.within && !state.within) {
+            state.within = parsed.within;
+          }
+          typeTags.push({ kind: "constructor", name: parsed.name, isMethod: false });
+          break;
+        }
         case "within":
           state.within = tag.value;
           break;
@@ -443,7 +664,19 @@ function parseDocBlock(contentLines) {
             tags.push(tag.value);
           }
           break;
-        case "unreleased":
+        case "category":
+          if (tag.value) {
+            state.categories.push(tag.value);
+          }
+          break;
+        case "event":
+          state.event = true;
+          break;
+        case "extends":
+          if (tag.value) {
+            state.extends.push(tag.value);
+          }
+          break;        case "unreleased":
           state.unreleased = true;
           break;
         case "since":
@@ -680,6 +913,11 @@ function buildDocs(doc) {
     tags.push({ name: "tag", value: label });
   }
 
+  for (const category of doc.state.categories) {
+    tags.push({ name: "category", value: category });
+  }
+
+
   if (doc.state.since) {
     tags.push({ name: "since", value: doc.state.since });
   }
@@ -694,6 +932,14 @@ function buildDocs(doc) {
 
   if (doc.state.unreleased) {
     tags.push({ name: "unreleased", value: true });
+  }
+
+  if (doc.state.event) {
+    tags.push({ name: "event", value: true });
+  }
+
+  for (const value of doc.state.extends) {
+    tags.push({ name: "extends", value });
   }
 
   for (const realm of doc.realms) {
@@ -763,7 +1009,7 @@ function findNextBindingLine(lines, startIndex, blockByStart) {
   return null;
 }
 
-function buildSymbolsForBlock(doc, block, binding, filePath, relativePath, diagnostics) {
+function buildSymbolsForBlock(doc, block, binding, filePath, relativePath, diagnostics, classNames) {
   const symbols = [];
   const typeTag = resolveTypeTag(doc);
   let kind = null;
@@ -781,6 +1027,17 @@ function buildSymbolsForBlock(doc, block, binding, filePath, relativePath, diagn
       kind = "function";
       isMethod = Boolean(typeTag.isMethod);
     }
+    if (typeTag.kind === "constructor") {
+      kind = "constructor";
+      isMethod = false;
+    }
+    if (!name && binding) {
+      name = binding.name || null;
+      within = within || binding.within || null;
+      if (binding.isMethod !== undefined) {
+        isMethod = Boolean(binding.isMethod) || isMethod;
+      }
+    }
   } else if (binding) {
     kind = binding.kind;
     name = binding.name || null;
@@ -788,17 +1045,34 @@ function buildSymbolsForBlock(doc, block, binding, filePath, relativePath, diagn
     isMethod = Boolean(binding.isMethod);
   }
 
-  if (!kind || !name) {
-    return symbols;
+  const inferredKind = kind || (binding ? binding.kind : null);
+  const needsWithin = inferredKind === "function" || inferredKind === "property" || inferredKind === "constructor";
+
+  if (!within && binding && binding.within) {
+    within = binding.within;
   }
 
-  if (!within && kind !== "class" && kind !== "type" && kind !== "interface") {
+  if (!within && needsWithin && classNames && classNames.length === 1) {
+    within = classNames[0];
+  }
+
+  if (kind === "function" && name === "new" && within && !isMethod) {
+    kind = "constructor";
+  }
+
+  if (!within && needsWithin && classNames) {
     diagnostics.push({
-      level: "warning",
+      level: classNames.length === 0 ? "error" : "warning",
       file: relativePath,
       line: block.startLine,
-      message: "@within missing for non-class symbol.",
+      message: classNames.length === 0
+        ? "@class missing for this file."
+        : "@within missing for ambiguous class ownership.",
     });
+  }
+
+  if (!kind || !name) {
+    return symbols;
   }
 
   if (doc.state.readonly && kind !== "property") {
@@ -820,7 +1094,7 @@ function buildSymbolsForBlock(doc, block, binding, filePath, relativePath, diagn
 
   let types = { display: "", structured: null };
 
-  if (kind === "function") {
+  if (kind === "function" || kind === "constructor") {
     types = buildFunctionTypes(doc, binding);
   } else if (kind === "property") {
     types = buildPropertyTypes(doc, typeTag ? typeTag.type : null);
@@ -841,6 +1115,37 @@ function buildSymbolsForBlock(doc, block, binding, filePath, relativePath, diagn
     types,
     visibility,
   });
+
+  if (kind === "type" && binding && binding.typeFields) {
+    for (const field of binding.typeFields) {
+      if (!field.name) {
+        continue;
+      }
+
+      const fieldLocation = field.line
+        ? buildLocation(relativePath, field.line, linesAt(filePath, field.line))
+        : location;
+      const fieldQualified = `${name}.${field.name}`;
+
+      symbols.push({
+        kind: "field",
+        name: field.name,
+        qualifiedName: fieldQualified,
+        location: fieldLocation,
+        docs: {
+          summary: field.description || "",
+          descriptionMarkdown: field.description || "",
+          tags: [],
+          examples: [],
+        },
+        types: {
+          display: field.type || "",
+          structured: { type: field.type || null },
+        },
+        visibility,
+      });
+    }
+  }
 
   if (kind === "interface") {
     for (const field of doc.fields) {
@@ -927,16 +1232,39 @@ function generateModule(filePath, rootDir, srcDir, typesDir, moduleIdOverrides, 
   }
 
   const moduleSymbols = [];
+  const classNames = [];
+  const typeTableRanges = findTypeTableRanges(lines);
+  let currentClassName = null;
+
+
 
   for (const block of blocks) {
+    const isInsideTypeTable = typeTableRanges.some((range) => block.startLine >= range.startLine && block.startLine <= range.endLine);
+    if (isInsideTypeTable) {
+      continue;
+    }
+
     const doc = parseDocBlock(block.contentLines);
+    for (const tag of doc.typeTags) {
+      if (tag.kind === "class" && tag.name) {
+        if (!classNames.includes(tag.name)) {
+          classNames.push(tag.name);
+        }
+        currentClassName = tag.name;
+      }
+    }
+
+    if (doc.state.within === "~" && currentClassName) {
+      doc.state.within = currentClassName;
+    }
+
     const typeTag = resolveTypeTag(doc);
     let binding = null;
 
     if (!typeTag || typeTag.kind === "function") {
       const next = findNextBindingLine(lines, block.endLine, blockByStart);
       if (next) {
-        binding = parseBinding(next.line);
+        binding = parseBindingAt(lines, next.lineNumber - 1);
         if (binding) {
           binding.line = next.line;
           binding.lineNumber = next.lineNumber;
@@ -945,14 +1273,21 @@ function generateModule(filePath, rootDir, srcDir, typesDir, moduleIdOverrides, 
     }
 
     const relativePath = normalizePath(path.relative(rootDir, filePath));
-    const symbols = buildSymbolsForBlock(doc, block, binding, filePath, relativePath, diagnostics);
+    const symbols = buildSymbolsForBlock(doc, block, binding, filePath, relativePath, diagnostics, classNames);
     moduleSymbols.push(...symbols);
 
-    if (binding && binding.kind === "function") {
+    if (binding && (binding.kind === "function" || binding.kind === "constructor")) {
       const docParamNames = doc.params.map((param) => param.name);
       const bindingParamNames = binding.params.map((param) => param.name);
+      const hasExplicitParamType = doc.params.some((param) => {
+        if (!param.type) {
+          return false;
+        }
+        const normalized = param.type.trim();
+        return normalized.length > 0 && normalized !== "any";
+      });
 
-      if (docParamNames.length > 0) {
+      if (hasExplicitParamType && docParamNames.length > 0) {
         const missing = bindingParamNames.filter((name) => !docParamNames.includes(name));
         const extra = docParamNames.filter((name) => !bindingParamNames.includes(name));
 

@@ -8,8 +8,8 @@ StoryBakery 조직 공통 문서 템플릿을 설계하고 운영하기 위한 �
 
 문서
 - 사용법: USAGE.md
-- 아키텍처: architectures/main.md
-- 릴리즈: RELEASE.md
+- 아키텍처: website/docs/getting-started/index.md
+- 릴리즈: website/docs/development/release.md
 
 디렉터리
 - 실제 문서 사이트: website/

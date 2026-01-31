@@ -1,4 +1,4 @@
-std = "roblox"
+std = "roblox+luau"
 
 [lints]
 unused_variable = "allow"                # 또는 "warn"
