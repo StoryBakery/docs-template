@@ -2,7 +2,22 @@
 const fs = require("fs");
 const path = require("path");
 const { spawn, spawnSync } = require("child_process");
-const toml = require("toml");
+const { createRequire } = require("module");
+const toml = requireToml();
+
+function requireToml() {
+    try {
+        return require("toml");
+    } catch (error) {
+        try {
+            const cwdRequire = createRequire(path.join(process.cwd(), "package.json"));
+            return cwdRequire("toml");
+        } catch (innerError) {
+            throw error;
+        }
+    }
+}
+
 
 const DOCUSAURUS_COMMANDS = new Set([
     "start",
