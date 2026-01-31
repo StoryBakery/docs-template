@@ -14,22 +14,9 @@ bakerywave는 GitHub Releases를 기준으로 배포합니다.
 
 ### rokit 설치
 
-Windows 예시:
 ```
 [tools]
-bakerywave = { source = "github", repo = "StoryBakery/bakerywave", tag = "vX.Y.Z", asset = "bakerywave-windows-x64.zip" }
-```
-
-Linux 예시:
-```
-[tools]
-bakerywave = { source = "github", repo = "StoryBakery/bakerywave", tag = "vX.Y.Z", asset = "bakerywave-linux-x64.zip" }
-```
-
-macOS 예시:
-```
-[tools]
-bakerywave = { source = "github", repo = "StoryBakery/bakerywave", tag = "vX.Y.Z", asset = "bakerywave-macos-x64.zip" }
+bakerywave = "storybakery/bakerywave@1.0.0"
 ```
 
 ## 기본 사용

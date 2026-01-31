@@ -4,9 +4,64 @@ const path = require("path");
 const { spawnSync } = require("child_process");
 
 const args = process.argv.slice(2);
-const targetDir = args[0] || "website";
 const cwd = process.cwd();
-const templateDir = path.resolve(__dirname, "..", "template");
+const defaultTemplateDir = path.resolve(__dirname, "..", "template");
+let targetDir = "website";
+let templateDir = defaultTemplateDir;
+let install = true;
+let force = false;
+let packageManager = "npm";
+
+function printHelp() {
+  console.log("Usage: create-docs [dir] [options]");
+  console.log("");
+  console.log("Options:");
+  console.log("  --dir <dir>              Target directory (default: website)");
+  console.log("  --template <path>        Template directory path");
+  console.log("  --no-install             Skip package installation");
+  console.log("  --skip-install           Alias for --no-install");
+  console.log("  --package-manager <pm>   npm | pnpm | yarn | bun (default: npm)");
+  console.log("  --force                  Allow non-empty directory");
+  console.log("  -h, --help               Show help");
+}
+
+for (let i = 0; i < args.length; i += 1) {
+  const arg = args[i];
+  if (arg === "-h" || arg === "--help") {
+    printHelp();
+    process.exit(0);
+  }
+  if (arg === "--dir" && args[i + 1]) {
+    targetDir = args[i + 1];
+    i += 1;
+    continue;
+  }
+  if (arg === "--template" && args[i + 1]) {
+    templateDir = path.resolve(cwd, args[i + 1]);
+    i += 1;
+    continue;
+  }
+  if (arg === "--no-install" || arg === "--skip-install") {
+    install = false;
+    continue;
+  }
+  if (arg === "--force") {
+    force = true;
+    continue;
+  }
+  if (arg === "--package-manager" && args[i + 1]) {
+    packageManager = args[i + 1];
+    i += 1;
+    continue;
+  }
+  if (!arg.startsWith("-") && targetDir === "website") {
+    targetDir = arg;
+    continue;
+  }
+  console.error(`[storybakery] unknown option: ${arg}`);
+  process.exit(1);
+}
+
 const destDir = path.resolve(cwd, targetDir);
 
 function copyDir(src, dest) {
@@ -39,25 +94,29 @@ if (!fs.existsSync(templateDir)) {
   process.exit(1);
 }
 
-if (!isDirectoryEmpty(destDir)) {
+if (!force && !isDirectoryEmpty(destDir)) {
   console.error(`[storybakery] target directory not empty: ${destDir}`);
   process.exit(1);
 }
 
 copyDir(templateDir, destDir);
 
-const install = spawnSync("npm", ["install"], {
-  cwd: destDir,
-  stdio: "inherit",
-  shell: true,
-});
+if (install) {
+  const installResult = spawnSync(packageManager, ["install"], {
+    cwd: destDir,
+    stdio: "inherit",
+    shell: true,
+  });
 
-if (install.status !== 0) {
-  console.error("[storybakery] npm install failed.");
-  process.exit(install.status === null ? 1 : install.status);
+  if (installResult.status !== 0) {
+    console.error("[storybakery] install failed.");
+    process.exit(installResult.status === null ? 1 : installResult.status);
+  }
 }
 
 console.log("");
 console.log("[storybakery] setup complete.");
 console.log(`- cd ${targetDir}`);
-console.log("- npm run dev");
+if (install) {
+  console.log("- npm run dev");
+}

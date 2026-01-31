@@ -49,7 +49,26 @@ bakerywave start -- --host 0.0.0.0 --port 4000
 1. 기본: `npm exec docusaurus -- <command>`
 2. 실패 시: `node @docusaurus/core/bin/docusaurus.mjs <command>`
 
-## 3) dev 명령 (reference watch + auto restart)
+## 3) init (스캐폴딩)
+
+### 명령
+```
+bakerywave init [dir] [options]
+```
+
+### 동작
+- 내부적으로 `npm create @storybakery/docs`를 실행합니다.
+- `dir`가 있으면 해당 경로에 생성합니다.
+- 추가 옵션은 `--` 없이 그대로 전달됩니다.
+
+### 지원 옵션(패스스루)
+- `--dir <dir>`: 생성 경로 지정
+- `--template <path>`: 템플릿 경로 지정
+- `--no-install` / `--skip-install`: 설치 생략
+- `--package-manager <pm>`: `npm | pnpm | yarn | bun`
+- `--force`: 비어있지 않은 디렉터리 허용
+
+## 4) dev 명령 (reference watch + auto restart)
 
 ### 명령
 ```
@@ -73,7 +92,7 @@ bakerywave dev --site-dir <dir>
   - `docusaurus.config.*`
   - `bakerywave.toml`
 
-## 4) reference build
+## 5) reference build
 
 ### 명령
 ```
@@ -91,6 +110,7 @@ bakerywave reference build [options]
 - `--include-private`: private 심볼 포함
 - `--no-clean`: stale 파일 정리 비활성화
 - `--render-mode <mdx|json>`: 렌더 모드
+- `--no-reference`: 주석 기반 reference 추출 비활성화
 - `--fail-on-warning`: 경고를 실패로 처리
 - `--legacy`: Node docgen 실행 시 legacy 모드
 
@@ -102,7 +122,7 @@ bakerywave reference build [options]
 
 > `renderMode`가 `mdx`가 아니면 **생성 스킵**으로 처리됩니다.
 
-## 5) reference watch
+## 6) reference watch
 
 ### 명령
 ```
@@ -117,7 +137,7 @@ bakerywave reference watch [options]
 - 파일 변경 시 `reference build`와 동일한 플로우를 수행
 - 실행 중 추가 변경이 들어오면 **1회 대기 후 재실행**
 
-## 6) 설정 탐색 규칙
+## 7) 설정 탐색 규칙
 
 ### bakerywave.toml
 - 탐색 위치:
@@ -128,7 +148,7 @@ bakerywave reference watch [options]
 - siteDir이 `website`면 상위 디렉터리
 - 그 외는 현재 작업 디렉터리
 
-## 7) 예시
+## 8) 예시
 
 ### 기본 개발 실행
 ```
@@ -144,4 +164,3 @@ bakerywave reference build --site-dir tests/luau-module-project/website --lang l
 ```
 bakerywave start --site-dir tests/luau-module-project/website -- --host 0.0.0.0 --port 3000
 ```
-

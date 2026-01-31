@@ -1,0 +1,12 @@
+schemaVersion = 1
+
+[reference]
+enabled = false
+
+[i18n]
+defaultLocale = "en"
+locales = ["en", "ko"]
+referenceLocales = ["en"]
+
+[i18n.reference]
+copy = true

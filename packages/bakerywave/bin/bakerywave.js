@@ -396,6 +396,7 @@ function resolveReferenceGenerator(searchPaths) {
 
 function parseReferenceArgs(args) {
     const options = {
+        enabled: null,
         lang: null,
         rootDir: null,
         srcDir: null,
@@ -416,6 +417,10 @@ function parseReferenceArgs(args) {
         if (arg === "--lang" && args[i + 1]) {
             options.lang = args[i + 1];
             i += 1;
+            continue;
+        }
+        if (arg === "--no-reference") {
+            options.enabled = false;
             continue;
         }
         if (arg === "--root" && args[i + 1]) {
@@ -493,6 +498,7 @@ function resolveReferenceLanguageOptions(referenceOptions, overrides) {
 function resolveReferenceOptions(baseOptions, overrides) {
     const merged = { ...baseOptions };
     const keys = [
+        "enabled",
         "lang",
         "rootDir",
         "srcDir",
@@ -619,6 +625,10 @@ function runLuauDocgen(docgenScript, defaults, docgenFlags) {
 }
 
 function runReferenceBuild(docgenScript, generator, baseCwd, siteDirAbs, referenceOptions, docgenFlags, configPath) {
+    if (referenceOptions.enabled === false) {
+        console.log("[bakerywave] reference disabled.");
+        return;
+    }
     const defaults = resolveReferenceDefaults(baseCwd, siteDirAbs, referenceOptions);
     runLuauDocgen(docgenScript, defaults, docgenFlags);
 
@@ -715,6 +725,10 @@ function createWatchers(targets, onChange) {
 }
 
 function runReferenceWatch(docgenScript, generator, baseCwd, siteDirAbs, referenceOptions, docgenFlags, configPath) {
+    if (referenceOptions.enabled === false) {
+        console.log("[bakerywave] reference disabled.");
+        return;
+    }
     const defaults = resolveReferenceDefaults(baseCwd, siteDirAbs, referenceOptions);
     const watchTargets = [path.join(defaults.rootDir, defaults.srcDir)];
     if (defaults.typesDir) {

@@ -46,6 +46,7 @@ bakerywave는 프로젝트 루트 또는 `website/`에서 `bakerywave.toml`을 �
 
 ```toml
 [reference]
+enabled = true
 lang = "luau"
 rootDir = "."
 srcDir = "src"
@@ -61,6 +62,7 @@ categoryOrder = ["Core", "Async"]
 
 ## 주의 사항
 
+- `enabled = false`면 주석 기반 추출과 MDX 생성이 모두 비활성화됩니다.
 - `renderMode`가 `mdx`가 아니면 reference 생성이 건너뛰어집니다.
 - `clean = true`일 때는 manifest에 없는 파일을 정리합니다.
 
